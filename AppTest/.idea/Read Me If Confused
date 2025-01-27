@@ -1,0 +1,11 @@
+npm install --global eas-cli
+npx create-expo-app parking-app-ios
+cd parking-app-ios
+eas init --id c47b7fb0-1084-4d22-a831-87ec9f472218
+
+// Some Helpful commands
+- cd parking-app-ios
+- npm run android
+- npm run ios # you need to use macOS to build the iOS project - use the Expo app if you need to do iOS development without a Mac
+- npm run web
+-eas login -s // This logs you in via sso
