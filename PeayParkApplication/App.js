@@ -5,18 +5,33 @@ import {Button, StyleSheet, Text, View} from 'react-native';
 
 
 const LoginPage = () => { // Copy this to make new pages.
+
+    const LoginScreen = () => {
+        const [username, setUsername] = useState('');
+        const [password, setPassword] = useState('');
+    }
+    const handleLogin = () => {
+        if (username === 'user' && password === 'password') {
+            Alert.alert('Success', 'Logged in successfully!');
+        } else {
+            Alert.alert('Error', 'Invalid credentials');
+        }
+    }
     return (
         <View style={styles.container}>
             <Text>Welcome to Login Page</Text>
             {/* Add custom content for Page  here */}
+
         </View>
+
+
     );
 };
 
 const MapPage = () => { // Copy this to make new pages.
     return (
         <View style={styles.container}>
-            <Text>Welcome to Map Page Bro Beans</Text>
+            <Text>Welcome to Map Page Bro Beanss</Text>
             {/* Add custom content for Page  here */}
         </View>
     );
