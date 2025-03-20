@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import {Button, StyleSheet, Text, View} from 'react-native';
+import {Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 
 const LoginPage = () => { // Copy this to make new pages Mitchell working on it.
@@ -12,6 +12,12 @@ const LoginPage = () => { // Copy this to make new pages Mitchell working on it.
         <View style={styles.container}>
             <Text>PeayPark Login Page 🚗🚗🚗</Text>
             {/* Add custom content for Page  here */}
+            <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+                <Text>Sign up</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+                <Text>Sign up</Text>
+            </TouchableOpacity>
 
         </View>
 
