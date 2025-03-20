@@ -4,22 +4,13 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {Button, StyleSheet, Text, View} from 'react-native';
 
 
-const LoginPage = () => { // Copy this to make new pages.
+const LoginPage = () => { // Copy this to make new pages Mitchell working on it.
 
-    const LoginScreen = () => {
-        const [username, setUsername] = useState('');
-        const [password, setPassword] = useState('');
-    }
-    const handleLogin = () => {
-        if (username === 'user' && password === 'password') {
-            Alert.alert('Success', 'Logged in successfully!');
-        } else {
-            Alert.alert('Error', 'Invalid credentials');
-        }
-    }
+
+
     return (
         <View style={styles.container}>
-            <Text>Welcome to Login Page</Text>
+            <Text>PeayPark Login Page 🚗🚗🚗</Text>
             {/* Add custom content for Page  here */}
 
         </View>
