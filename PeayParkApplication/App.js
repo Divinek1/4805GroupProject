@@ -8,7 +8,7 @@ const LoginPage = () => { // Copy this to make new pages.
     return (
         <View style={styles.container}>
             <Text>Welcome to Login Page</Text>
-            {/* Add custom content for Page 1 here */}
+            {/* Add custom content for Page  here */}
         </View>
     );
 };
@@ -16,8 +16,8 @@ const LoginPage = () => { // Copy this to make new pages.
 const MapPage = () => { // Copy this to make new pages.
     return (
         <View style={styles.container}>
-            <Text>Welcome to Login Page</Text>
-            {/* Add custom content for Page 1 here */}
+            <Text>Welcome to Map Page</Text>
+            {/* Add custom content for Page  here */}
         </View>
     );
 };
@@ -25,8 +25,8 @@ const MapPage = () => { // Copy this to make new pages.
 const AdminPage = () => { // Copy this to make new pages.
     return (
         <View style={styles.container}>
-            <Text>Welcome to Login Page</Text>
-            {/* Add custom content for Page 1 here */}
+            <Text>Welcome to Admin Page</Text>
+            {/* Add custom content for Page  here */}
         </View>
     );
 };
@@ -34,8 +34,8 @@ const AdminPage = () => { // Copy this to make new pages.
 const Page4 = () => { // Copy this to make new pages.
     return (
         <View style={styles.container}>
-            <Text>Welcome to Login Page</Text>
-            {/* Add custom content for Page 1 here */}
+            <Text>Welcome to Page 4</Text>
+            {/* Add custom content for Page here */}
         </View>
     );
 };
@@ -43,8 +43,8 @@ const Page4 = () => { // Copy this to make new pages.
 const Page5 = () => { // Copy this to make new pages.
     return (
         <View style={styles.container}>
-            <Text>Welcome to Login Page</Text>
-            {/* Add custom content for Page 1 here */}
+            <Text>Welcome to Page 5</Text>
+            {/* Add custom content for Page  here */}
         </View>
     );
 };
@@ -52,8 +52,8 @@ const Page5 = () => { // Copy this to make new pages.
 const ReportingPage = () => { // Copy this to make new pages.
     return (
         <View style={styles.container}>
-            <Text>Welcome to Login Page</Text>
-            {/* Add custom content for Page 1 here */}
+            <Text>Welcome to Reporting Page</Text>
+            {/* Add custom content for Page  here */}
         </View>
     );
 };
@@ -61,8 +61,8 @@ const ReportingPage = () => { // Copy this to make new pages.
 const SettingsPage = () => { // Copy this to make new pages.
     return (
         <View style={styles.container}>
-            <Text>Welcome to Login Page</Text>
-            {/* Add custom content for Page 1 here */}
+            <Text>Welcome to Settings Page</Text>
+            {/* Add custom content for Page  here */}
         </View>
     );
 };
@@ -75,11 +75,11 @@ const HomeScreen = ({ navigation }) => {
         <Text>PeayPark!</Text>
         <Button title="Go to Login Page" onPress={() => navigation.navigate('LoginPage')} />
         <Button title="Go to Map Page" onPress={() => navigation.navigate('MapPage')} />
-        <Button title="Go to Administration Page" onPress={() => navigation.navigate('Page3')} />
+        <Button title="Go to Administration Page" onPress={() => navigation.navigate('AdminPage')} />
         <Button title="Go to Whatever Page" onPress={() => navigation.navigate('Page4')} />
         <Button title="Go to Whatever Page" onPress={() => navigation.navigate('Page5')} />
         <Button title="Go to Reporting Page" onPress={() => navigation.navigate('ReportingPage')} />
-        <Button title="Go to Settings Page" onPress={() => navigation.navigate('Page7')} />
+        <Button title="Go to Settings Page" onPress={() => navigation.navigate('SettingsPage')} />
       </View>
   );
 };
@@ -89,13 +89,13 @@ export default function App() { // Once pages are customized, copy what I did fo
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="Login Page" component={LoginPage} />
-          <Stack.Screen name="Map Page" component={MapPage} />
-          <Stack.Screen name="Admin Page" component={AdminPage} />
+          <Stack.Screen name="LoginPage" component={LoginPage} />
+          <Stack.Screen name="MapPage" component={MapPage} />
+          <Stack.Screen name="AdminPage" component={AdminPage} />
           <Stack.Screen name="Page4" component={Page4} />
           <Stack.Screen name="Page5" component={Page5} />
-          <Stack.Screen name="Reporting Page" component={ReportingPage} />
-          <Stack.Screen name="Settings Page" component={SettingsPage}  />
+          <Stack.Screen name="ReportingPage" component={ReportingPage} />
+          <Stack.Screen name="SettingsPage" component={SettingsPage}  />
         </Stack.Navigator>
       </NavigationContainer>
   );
