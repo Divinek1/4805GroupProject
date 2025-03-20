@@ -19,7 +19,7 @@ const SettingsPage = () => {
             }
         ]);
     };
-
+    // This needs to have onClicked for Changing Map overlay for 2 settings ***************
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -28,12 +28,6 @@ const SettingsPage = () => {
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.settingOption}>
                     <Text style={styles.settingText}>Set Map Overlay to Satellite</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.settingOption}>
-                    <Text style={styles.settingText}>Setting 3</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.settingOption}>
-                    <Text style={styles.settingText}>Setting 4</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.settingOption} onPress={QuitApplication}>
                     <Text style={styles.settingText}>Quit Program</Text>
