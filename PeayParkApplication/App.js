@@ -16,7 +16,7 @@ const LoginPage = () => { // Copy this to make new pages.
 const MapPage = () => { // Copy this to make new pages.
     return (
         <View style={styles.container}>
-            <Text>Welcome to Map Page</Text>
+            <Text>Welcome to Map Page Bro Beans</Text>
             {/* Add custom content for Page  here */}
         </View>
     );
