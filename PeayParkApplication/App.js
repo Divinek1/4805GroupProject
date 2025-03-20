@@ -35,13 +35,13 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="Page1" component={PageScreen} initialParams={{ title: 'Welcome to Page 1' }} />
-          <Stack.Screen name="Page2" component={PageScreen} initialParams={{ title: 'Welcome to Page 2' }} />
+          <Stack.Screen name="Page1" component={PageScreen} initialParams={{ title: 'Welcome to Login Page' }} />
+          <Stack.Screen name="Page2" component={PageScreen} initialParams={{ title: 'Welcome to Map Page' }} />
           <Stack.Screen name="Page3" component={PageScreen} initialParams={{ title: 'Welcome to Page 3' }} />
           <Stack.Screen name="Page4" component={PageScreen} initialParams={{ title: 'Welcome to Page 4' }} />
           <Stack.Screen name="Page5" component={PageScreen} initialParams={{ title: 'Welcome to Page 5' }} />
           <Stack.Screen name="Page6" component={PageScreen} initialParams={{ title: 'Welcome to Page 6' }} />
-          <Stack.Screen name="Page7" component={PageScreen} initialParams={{ title: 'Welcome to Page 7' }} />
+          <Stack.Screen name="Page7" component={PageScreen} initialParams={{ title: 'Welcome to Settings page.' }} />
         </Stack.Navigator>
       </NavigationContainer>
   );
