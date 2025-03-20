@@ -67,6 +67,14 @@ const SettingsPage = () => { // Copy this to make new pages.
     );
 };
 
+
+
+
+
+
+
+
+
 const Stack = createNativeStackNavigator();
 
 const HomeScreen = ({ navigation }) => {
