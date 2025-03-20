@@ -1,11 +1,13 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import {Button, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
-import SettingsPage from './SettingsPage';
-// import MapPage from './MapPage';
+import {Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
-const LoginPage = () => { // Copy this to make new pages Mitchell working on it.
+// Put your page imports here :) -CD
+import MapPage from './MapPage';
+import SettingsPage from './SettingsPage';
+
+const LoginPage = () => { // Copy this to make new pages :) -CD Mitchell working on it.
 
 
 
@@ -32,17 +34,6 @@ const LoginPage = () => { // Copy this to make new pages Mitchell working on it.
 
     );
 };
-
-const MapPage = () => { // Copy this to make new pages.
-    return (
-        <View style={styles.container}>
-            <Text>Welcome to Map Page Bro Beanss</Text>
-            {/* Add custom content for Page  here */}
-        </View>
-    );
-};
-
-
 const AdminPage = () => { // Copy this to make new pages.
     return (
         <View style={styles.container}>
