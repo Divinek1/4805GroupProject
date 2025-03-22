@@ -21,9 +21,9 @@ const SettingsPage = () => {
         ]);
     };
 
-    async function updateData() {
+    async function updateData() { // Testing updating tables YEEHAW
         const { data, error } = await supabase
-            .from('Parking Lot Table')
+            .from('Parking Lot Table') // from Parking Lot Table
             .update({ ParkingLotID: 'Foy_updated' }) // Set the new value for ParkingLotID
             .eq('ParkingLotID', 'Foy') // Filter to ensure we update only the desired row
             .select();
@@ -35,25 +35,12 @@ const SettingsPage = () => {
         }
     }
 
-    /*
-    async function updateFirstRow() {
-        // Step 1: Fetch the first row
-        const { data: firstRow, error: fetchError } = await supabase
-            .from('Parking Lot Table')
-            .select('*')
-            .limit(1) // Limit to 1 to get the first row
-            .single(); // Get a single row
-
-        if (fetchError) {
-            console.error('Error fetching the first row:', fetchError);
-            return; // Exit if there's an error
-        }
-
-        // Step 2: Update the first row using its ID
+    async function parkCar() {
         const { data, error } = await supabase
-            .from('Parking Lot Table')
-            .update({ column1: 'Foy_Updated', column2: 'another new value' });
-            //.select();
+            .from('Parking Lot Table') // from Parking Lot Table
+            .update({ ParkingLotID: '' }) // Set the new value for number of spaces available
+            .eq('ParkingLotID', 'Foy_updated') // Filter to ensure we update only the desired row
+            .select();
 
         if (error) {
             console.error('Error updating data:', error);
@@ -61,9 +48,6 @@ const SettingsPage = () => {
             console.log('Data updated successfully:', data);
         }
     }
-*/
-
-
 
 
 
@@ -92,7 +76,7 @@ const SettingsPage = () => {
                 <TouchableOpacity style={styles.settingOption}>
                     <Text style={styles.settingText}>Set Map Overlay to Satellite</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.settingOption}> onPress={updateData} >
+                <TouchableOpacity style={styles.settingOption} onPress={updateData}>
                     <Text style={styles.settingText}>Send update to Supabase (Test Function)</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.settingOption} onPress={QuitApplication}>
