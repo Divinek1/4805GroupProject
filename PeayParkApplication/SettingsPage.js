@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Button} from 'react-native';
 import { supabase } from './supabase';
 
 const SettingsPage = () => {
@@ -36,9 +36,8 @@ const SettingsPage = () => {
     }
 
 
-    // How to call and test this function ->>>>>>>> onPress={takeParkingSpace('Foy_updated')}
-    /*
-    async function takeParkingSpace(parkingLotID) { // This keeps automatically getting called when settings opens.
+    // How to call and test this function ->>>>>>>> onPress={() => takeParkingSpace('Foy_updated')}
+    async function takeParkingSpace(parkingLotID) {
         // Getting the current number of Available Parking Spots
         const { data: currentData, error: fetchError } = await supabase
             .from('Parking Lot Table')
@@ -71,7 +70,40 @@ const SettingsPage = () => {
         }
     }
 
-*/
+// How to call and test this function ->>>>>>>> onPress={() => leaveParkingSpace('Foy_updated')}
+    async function leaveParkingSpace(parkingLotID) {
+        // Getting the current number of Available Parking Spots
+        const { data: currentData, error: fetchError } = await supabase
+            .from('Parking Lot Table')
+            .select('AvailableSpaces')
+            .eq('ParkingLotID', parkingLotID)
+            .single(); // Retrieve only one row
+
+        if (fetchError) {
+            console.error('Error fetching current AvailableSpaces:', fetchError);
+            return; // Exit the function if there's an error
+        }
+
+        if (currentData && currentData.AvailableSpaces < 120) {
+            // Decrement AvailableSpaces if there are spaces available
+            const newAvailableSpaces = currentData ? currentData.AvailableSpaces + 1 : 1; // Adding is somewhat harder than subtracting
+
+            const { data, error } = await supabase
+                .from('Parking Lot Table')
+                .update({ AvailableSpaces: newAvailableSpaces }) // Update with new value
+                .eq('ParkingLotID', parkingLotID) // Filter to ensure we update only the desired row
+                .select();
+
+            if (error) {
+                console.error('Error updating AvailableSpaces:', error);
+            } else {
+                console.log('Available spaces were incremented once!', data);
+            }
+        } else {
+            console.log('You cannot unpark here, there are already max spaces available', parkingLotID);
+        }
+    }
+
 
 
 // Also this is where ive been testing functions. feel free to copy a button and add a call!
@@ -79,21 +111,36 @@ const SettingsPage = () => {
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <TouchableOpacity style={styles.settingOption}>
-                    <Text style={styles.settingText}>Set Map Overlay to Digital</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.settingOption}>
-                    <Text style={styles.settingText}>Set Map Overlay to Satellite</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.settingOption} onPress={updateData}>
-                    <Text style={styles.settingText}>Update Parking Lot Name TEST</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.settingOption}>
-                    <Text style={styles.settingText}>Foy Available Spaces - 1 TEST</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.settingOption} onPress={QuitApplication}>
-                    <Text style={styles.settingText}>Quit Program</Text>
-                </TouchableOpacity>
+                <Button
+                    title="Set Map Overlay to Digital"
+                    onPress={() => {/* Add your function here */}}
+                    color="#841584" // You can customize the button color
+                />
+                <Button
+                    title="Set Map Overlay to Satellite"
+                    onPress={() => {/* Add your function here */}}
+                    color="#841584" // You can customize the button color
+                />
+                <Button
+                    title="Update Parking Lot Name TEST"
+                    onPress={updateData}
+                    color="#841584" // You can customize the button color
+                />
+                <Button
+                    title="Parking Lot Spaces -1 TEST"
+                    onPress={() => takeParkingSpace('Foy_updated')}
+                    color="#841584" // You can customize the button color
+                />
+                <Button
+                    title="Parking Lot Spaces +1 Test"
+                    onPress={() => leaveParkingSpace('Foy_updated')}
+                    color="#841584"
+                />
+                <Button
+                    title="Quit Program"
+                    onPress={QuitApplication}
+                    color="#841584" // You can customize the button color
+                />
             </ScrollView>
         </View>
     );
