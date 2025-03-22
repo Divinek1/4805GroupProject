@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import MapView from 'react-native-maps';
@@ -9,9 +8,9 @@ const MapPage = () => { // TADA! DEFAULT MAP
             <MapView
                 style={styles.map}
                 initialRegion={{
-                    latitude: 37.78825, // Example latitude
-                    longitude: -122.4324, // Example longitude
-                    latitudeDelta: 0.0922, // Zoom level
+                    latitude: 36.532771,
+                    longitude: -87.349341,
+                    latitudeDelta: 0.1, // Zoom level
                     longitudeDelta: 0.0421, // Zoom level
                 }}
             />

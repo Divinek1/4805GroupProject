@@ -21,7 +21,7 @@ const SettingsPage = () => {
         ]);
     };
 
-    async function updateData() { // Testing updating tables YEEHAW
+    async function updateData() { // Testing updating tables, I think this counts as a stored procedure?
         const { data, error } = await supabase
             .from('Parking Lot Table') // from Parking Lot Table
             .update({ ParkingLotID: 'Foy_updated' }) // Set the new value for ParkingLotID
@@ -35,37 +35,46 @@ const SettingsPage = () => {
         }
     }
 
-    async function parkCar() {
-        const { data, error } = await supabase
-            .from('Parking Lot Table') // from Parking Lot Table
-            .update({ ParkingLotID: '' }) // Set the new value for number of spaces available
-            .eq('ParkingLotID', 'Foy_updated') // Filter to ensure we update only the desired row
-            .select();
 
-        if (error) {
-            console.error('Error updating data:', error);
+    // How to call and test this function ->>>>>>>> onPress={takeParkingSpace('Foy_updated')}
+    /*
+    async function takeParkingSpace(parkingLotID) { // This keeps automatically getting called when settings opens.
+        // Getting the current number of Available Parking Spots
+        const { data: currentData, error: fetchError } = await supabase
+            .from('Parking Lot Table')
+            .select('AvailableSpaces')
+            .eq('ParkingLotID', parkingLotID)
+            .single(); // Retrieve only one row
+
+        if (fetchError) {
+            console.error('Error fetching current AvailableSpaces:', fetchError);
+            return; // Exit the function if there's an error
+        }
+
+        if (currentData && currentData.AvailableSpaces > 0) {
+        // Decrement AvailableSpaces if there are spaces available
+            const newAvailableSpaces = currentData.AvailableSpaces - 1;
+
+            const { data, error } = await supabase
+                .from('Parking Lot Table')
+                .update({ AvailableSpaces: newAvailableSpaces }) // Update with new value
+                .eq('ParkingLotID', parkingLotID) // Filter to ensure we update only the desired row
+                .select();
+
+            if (error) {
+                console.error('Error updating AvailableSpaces:', error);
+            } else {
+                console.log('Available spaces were decremented once!', data);
+            }
         } else {
-            console.log('Data updated successfully:', data);
+            console.log('You cannot park here, there are no spots available', parkingLotID);
         }
     }
 
+*/
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Also this is where ive been testing functions. feel free to copy a button and add a call!
     // This needs to have onClicked for Changing Map overlay for 2 settings ***************
     return (
         <View style={styles.container}>
@@ -77,7 +86,10 @@ const SettingsPage = () => {
                     <Text style={styles.settingText}>Set Map Overlay to Satellite</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.settingOption} onPress={updateData}>
-                    <Text style={styles.settingText}>Send update to Supabase (Test Function)</Text>
+                    <Text style={styles.settingText}>Update Parking Lot Name TEST</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.settingOption}>
+                    <Text style={styles.settingText}>Foy Available Spaces - 1 TEST</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.settingOption} onPress={QuitApplication}>
                     <Text style={styles.settingText}>Quit Program</Text>
