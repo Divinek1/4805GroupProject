@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Button} from 'react-native';
+import {View, StyleSheet, ScrollView, Alert, Button} from 'react-native';
 import { supabase } from './supabase';
 
 const SettingsPage = () => {
@@ -72,38 +72,43 @@ const SettingsPage = () => {
 
 // How to call and test this function ->>>>>>>> onPress={() => leaveParkingSpace('Foy_updated')}
     async function leaveParkingSpace(parkingLotID) {
-        // Getting the current number of Available Parking Spots
+        // Getting the current number of Available Parking Spots and Total Spaces
         const { data: currentData, error: fetchError } = await supabase
             .from('Parking Lot Table')
-            .select('AvailableSpaces')
+            .select('AvailableSpaces, TotalSpaces') // Fetch both AvailableSpaces and TotalSpaces
             .eq('ParkingLotID', parkingLotID)
             .single(); // Retrieve only one row
 
         if (fetchError) {
-            console.error('Error fetching current AvailableSpaces:', fetchError);
+            console.error('Error fetching current AvailableSpaces and TotalSpaces:', fetchError);
             return; // Exit the function if there's an error
         }
 
-        if (currentData && currentData.AvailableSpaces < 120) {
-            // Decrement AvailableSpaces if there are spaces available
-            const newAvailableSpaces = currentData ? currentData.AvailableSpaces + 1 : 1; // Adding is somewhat harder than subtracting
+        if (currentData) {
+            const { AvailableSpaces, TotalSpaces } = currentData;
+            // Validate if we can increment AvailableSpaces
+            if (AvailableSpaces < TotalSpaces) {
+                // Increment AvailableSpaces
+                const newAvailableSpaces = AvailableSpaces + 1;
 
-            const { data, error } = await supabase
-                .from('Parking Lot Table')
-                .update({ AvailableSpaces: newAvailableSpaces }) // Update with new value
-                .eq('ParkingLotID', parkingLotID) // Filter to ensure we update only the desired row
-                .select();
+                const { data, error } = await supabase
+                    .from('Parking Lot Table')
+                    .update({ AvailableSpaces: newAvailableSpaces }) // Update with new value
+                    .eq('ParkingLotID', parkingLotID) // Filter to ensure we update only the desired row
+                    .select();
 
-            if (error) {
-                console.error('Error updating AvailableSpaces:', error);
+                if (error) {
+                    console.error('Error: Unable to update AvailableSpaces.', error);
+                } else {
+                    console.log('Available spaces were incremented once!', data);
+                }
             } else {
-                console.log('Available spaces were incremented once!', data);
+                console.log('Error: There are already max spaces available', parkingLotID);
             }
         } else {
-            console.log('You cannot unpark here, there are already max spaces available', parkingLotID);
+            console.log('This parkingLotID does not exist.', parkingLotID);
         }
     }
-
 
 
 // Also this is where ive been testing functions. feel free to copy a button and add a call!
