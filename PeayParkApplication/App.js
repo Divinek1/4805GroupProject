@@ -5,7 +5,6 @@ import {Button, StyleSheet, Text, View} from 'react-native';
 import LoginPage from "./LoginPage";
 import SettingsPage from "./SettingsPage";
 import MapPage from "./MapPage";
-import Waiting_Driver_Screen from "./Waiting_Driver_Screen";
 
 
 const AdminPage = () => { // Copy this to make new pages.
@@ -71,7 +70,7 @@ export default function App() { // Once pages are customized, copy what I did fo
           <Stack.Screen name="MapPage" component={MapPage} />
           <Stack.Screen name="AdminPage" component={AdminPage} />
           <Stack.Screen name="Page4" component={Page4} />
-          <Stack.Screen name="Page5" component={Waiting_Driver_Screen} />
+          <Stack.Screen name="Page5" component={Page5} />
           <Stack.Screen name="ReportingPage" component={ReportingPage} />
           <Stack.Screen name="SettingsPage" component={SettingsPage}  />
         </Stack.Navigator>
