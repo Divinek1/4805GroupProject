@@ -20,9 +20,9 @@ const MapPage = () => {
             // Start watching the user's location
             Location.watchPositionAsync(
                 {
-                    accuracy: Location.Accuracy.High,
+                    accuracy: Location.Accuracy.Highest,
                     distanceInterval: 1, // Update every meter
-                    timeInterval: 1000, // Update every second
+                    timeInterval: 2000, // Update every second
                 },
                 (location) => {
                     setCurrentLocation(location.coords);
