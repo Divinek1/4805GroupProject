@@ -3,28 +3,135 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const LoginPage = ({ navigation }) => {
     return (
+        // <View style={styles.container}>
+        //     <Text>PeayPark Login Page 🚗🚗🚗</Text>
+        //      Add custom content for Page here
+            // <TouchableOpacity
+            //     className="bg-indigo-500 mr-3 mt-2 rounded-md py-2"
+            //     style={{ elevation: 3 }}
+            //     onPress={() => navigation.navigate("Signup")}>
+            //     <Text>Sign up</Text>
+            // </TouchableOpacity>
+            // <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            //     <Text>Login</Text>
+            // </TouchableOpacity>
+        // </View>
         <View style={styles.container}>
-            <Text>PeayPark Login Page 🚗🚗🚗</Text>
-            {/* Add custom content for Page here */}
+            {/* Logo */}
+            <Text style={styles.logo}>🚗 PEAYPARK</Text>
+
+            {/* Email input */}
+            <TextInput
+                style={styles.input}
+                placeholder="Email"
+                placeholderTextColor="#888"
+            />
+
+            {/* Password input */}
+            <TextInput
+                style={styles.input}
+                placeholder="Password"
+                placeholderTextColor="#888"
+                secureTextEntry
+            />
+
+            {/* Active Log In button */}
             <TouchableOpacity
-                className="bg-indigo-500 mr-3 mt-2 rounded-md py-2"
-                style={{ elevation: 3 }}
-                onPress={() => navigation.navigate("Signup")}>
-                <Text>Sign up</Text>
+                style={styles.loginButton}
+                onPress={() => navigation.navigate("Home")} // Change "Home" to whatever your main screen is
+            >
+                <Text style={styles.loginButtonText}>Log In</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-                <Text>Login</Text>
+
+            {/* Forgot Password */}
+            <TouchableOpacity>
+                <Text style={styles.forgotText}>Forgot Password?</Text>
             </TouchableOpacity>
+
+            {/* Create Account button */}
+            <TouchableOpacity
+                style={styles.createButton}
+                onPress={() => navigation.navigate("Signup")}
+            >
+                <Text style={styles.createButtonText}>Create an Account</Text>
+            </TouchableOpacity>
+
+            {/* APSU Branding */}
+            <Text style={styles.apsuText}>Austin Peay State University</Text>
+            <Text style={styles.apsuSubText}>CLARKSVILLE • TENNESSEE</Text>
         </View>
+
     );
 };
 
 const styles = StyleSheet.create({
+ //   container: {
+   //     flex: 1,
+     //   backgroundColor: '#fff',
+       // alignItems: 'center',
+       // justifyContent: 'center',
+    //},
+
     container: {
         flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
+        padding: 20,
+    },
+    logo: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: '#d32f2f',
+        marginBottom: 40,
+    },
+    input: {
+        width: '100%',
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 6,
+        padding: 12,
+        marginVertical: 8,
+        fontSize: 16,
+    },
+    loginButton: {
+        width: '100%',
+        backgroundColor: '#ccc',
+        padding: 15,
+        borderRadius: 6,
+        marginTop: 10,
+        alignItems: 'center',
+    },
+    loginButtonText: {
+        color: '#000',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    forgotText: {
+        marginTop: 10,
+        color: '#555',
+        fontSize: 14,
+    },
+    createButton: {
+        marginTop: 30,
+        backgroundColor: '#d32f2f',
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 6,
+    },
+    createButtonText: {
+        color: '#fff',
+        fontSize: 16,
+    },
+    apsuText: {
+        marginTop: 30,
+        fontWeight: 'bold',
+        fontSize: 14,
+        color: '#000',
+    },
+    apsuSubText: {
+        fontSize: 12,
+        color: '#000',
     },
 });
 
