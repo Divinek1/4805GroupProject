@@ -3,17 +3,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {Button, StyleSheet, Text, View} from 'react-native';
 import LoginPage from "./LoginPage";
+import SettingsPage from "./SettingsPage";
+import MapPage from "./MapPage";
 
-
-
-const MapPage = () => { // Copy this to make new pages.
-    return (
-        <View style={styles.container}>
-            <Text>Welcome to Map Page Bro Beanss</Text>
-            {/* Add custom content for Page  here */}
-        </View>
-    );
-};
 
 const AdminPage = () => { // Copy this to make new pages.
     return (
@@ -50,22 +42,6 @@ const ReportingPage = () => { // Copy this to make new pages.
         </View>
     );
 };
-
-const SettingsPage = () => { // Copy this to make new pages.
-    return (
-        <View style={styles.container}>
-            <Text>Welcome to Settings Page</Text>
-            {/* Add custom content for Page  here */}
-        </View>
-    );
-};
-
-
-
-
-
-
-
 
 
 const Stack = createNativeStackNavigator();
