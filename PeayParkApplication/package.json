@@ -27,7 +27,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "tailwindcss": "^4.0.14"
+    "tailwindcss": "^4.0.14",
+    "@react-native-community/cli": "latest"
   },
   "private": true
 }
