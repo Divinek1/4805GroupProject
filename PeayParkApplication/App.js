@@ -1,36 +1,10 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import {Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Button, StyleSheet, Text, View} from 'react-native';
+import LoginPage from "./LoginPage";
 
 
-const LoginPage = () => { // Copy this to make new pages Mitchell working on it.
-
-
-
-    return (
-        <View style={styles.container}>
-            <Text>PeayPark Login Page 🚗🚗🚗</Text>
-            {/* Add custom content for Page  here */}
-            <TouchableOpacity
-                className="bg-indigo-500 mr-3 mt-2 rounded-md py-2"
-                style={{ elevation: 3 }}
-                onPress={() => navigation.navigate("Signup")}>
-
-                <Text>Sign up</Text>
-
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-                <Text>Login</Text>
-            </TouchableOpacity>
-
-
-
-        </View>
-
-
-    );
-};
 
 const MapPage = () => { // Copy this to make new pages.
     return (
