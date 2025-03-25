@@ -4,6 +4,7 @@ import MapView from 'react-native-maps';
 
 const MapPage = () => { // TADA! DEFAULT MAP
     return (
+
         <View style={styles.container}>
             <MapView
                 style={styles.map}
