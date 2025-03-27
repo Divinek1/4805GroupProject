@@ -5,16 +5,8 @@ import {Button, StyleSheet, Text, View} from 'react-native';
 import LoginPage from "./LoginPage";
 import SettingsPage from "./SettingsPage";
 import MapPage from "./MapPage";
-
-
-const AdminPage = () => { // Copy this to make new pages.
-    return (
-        <View style={styles.container}>
-            <Text>Welcome to Admin Page</Text>
-            {/* Add custom content for Page  here */}
-        </View>
-    );
-};
+import AdminPage from "./AdminPage";
+import ReportingPage from "./ReportingPage.js"
 
 const Page4 = () => { // Copy this to make new pages.
     return (
@@ -33,16 +25,6 @@ const Page5 = () => { // Copy this to make new pages.
         </View>
     );
 };
-
-const ReportingPage = () => { // Copy this to make new pages.
-    return (
-        <View style={styles.container}>
-            <Text>Welcome to Reporting Page</Text>
-            {/* Add custom content for Page  here */}
-        </View>
-    );
-};
-
 
 const Stack = createNativeStackNavigator();
 
