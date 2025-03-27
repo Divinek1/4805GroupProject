@@ -51,7 +51,6 @@ const MapPage = () => {
                 setParkingLots(data);
             }
         };
-
         fetchParkingLots();
     }, []);
 
