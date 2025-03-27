@@ -1,13 +1,13 @@
-// This is the MapPage.js file that holds the map along with the stuff needed to make the map work.
-
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from "expo-location";
+import {supabase} from './supabase';
 
 const MapPage = () => {
     const [currentLocation, setCurrentLocation] = useState(null);
     const [mapRef, setMapRef] = useState(null);
+    const [parkingLots, setParkingLots] = useState([]);
 
     useEffect(() => {
         const getLocation = async () => {
@@ -17,12 +17,11 @@ const MapPage = () => {
                 return;
             }
 
-            // Start watching the user's location
             Location.watchPositionAsync(
                 {
                     accuracy: Location.Accuracy.Highest,
-                    distanceInterval: 1, // Update every meter
-                    timeInterval: 2000, // Update every second
+                    distanceInterval: 1,
+                    timeInterval: 2000,
                 },
                 (location) => {
                     setCurrentLocation(location.coords);
@@ -32,13 +31,29 @@ const MapPage = () => {
                             longitude: location.coords.longitude,
                             latitudeDelta: 0.005,
                             longitudeDelta: 0.005,
-                        }, 1000); // Animate to the new location over 1 second
+                        }, 1000);
                     }
                 }
             );
         };
         getLocation();
     }, [mapRef]);
+
+    useEffect(() => {
+        const fetchParkingLots = async () => {
+            const { data, error } = await supabase
+                .from('Parking Lot Table') // Assuming your table is named 'parking_lots'
+                .select('*');
+
+            if (error) {
+                console.error("Error fetching parking lots: ", error);
+            } else {
+                setParkingLots(data);
+            }
+        };
+
+        fetchParkingLots();
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -60,11 +75,17 @@ const MapPage = () => {
                         }}
                         title="Your Current Location"
                     />
-                    <Marker
-                        coordinate={{ latitude: 36.53598027946025, longitude: -87.35140552172655 }}
-                        title="Burt Parking Lot"
-                        description="Parking Lot for Burt P"
-                    />
+                    {parkingLots.map((lot) => (
+                        <Marker
+                            key={lot.ParkingLotID}
+                            coordinate={{
+                                latitude: parseFloat(lot.Latitude),
+                                longitude: parseFloat(lot.Longitude),
+                            }}
+                            title={lot.ParkingLotID}
+                            description={`Available Spaces: ${lot.AvailableSpaces}`}
+                        />
+                    ))}
                 </MapView>
             )}
         </View>
