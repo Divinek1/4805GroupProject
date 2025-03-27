@@ -13,11 +13,9 @@ const ReportingPage = () => {
     ]);
 
     const generateReportId = () => {
-        const now = new Date();
-        const timestamp = now.toISOString().replace(/[-:]/g, '').split('.')[0];
-        return `${timestamp}1000`;
+        const randomId = Math.floor(Math.random() * 10000) + 1; // Generates a random number between 1 and 10,000
+        return randomId.toString(); // Convert to string if needed
     };
-
     const handleSubmit = async () => {
         if (!reportDetails.trim() || !parkingLot.trim()) {
             Alert.alert("Error", "Please fill in all required fields.");
