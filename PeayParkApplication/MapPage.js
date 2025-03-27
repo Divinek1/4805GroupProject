@@ -60,6 +60,11 @@ const MapPage = () => {
                         }}
                         title="Your Current Location"
                     />
+                    <Marker
+                        coordinate={{ latitude: 36.53598027946025, longitude: -87.35140552172655 }}
+                        title="Burt Parking Lot"
+                        description="Parking Lot for Burt P"
+                    />
                 </MapView>
             )}
         </View>

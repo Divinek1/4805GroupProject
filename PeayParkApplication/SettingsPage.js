@@ -4,23 +4,6 @@ import { supabase } from './supabase';
 
 const SettingsPage = () => {
 
-    const QuitApplication = () => {
-        // You can replace this with your actual quit logic
-        Alert.alert("Quit Program", "Are you sure you want to quit?", [
-            {
-                text: "Cancel",
-                style: "cancel"
-            },
-            {
-                text: "OK",
-                onPress: () => {
-                    process.exit(0);
-                    console.log("Program has been quitted, but in a good way.");
-                }
-            }
-        ]);
-    };
-
     async function updateData() { // Testing updating tables, I think this counts as a stored procedure?
         const { data, error } = await supabase
             .from('Parking Lot Table') // from Parking Lot Table
@@ -140,11 +123,6 @@ const SettingsPage = () => {
                     title="Parking Lot Spaces +1 Test"
                     onPress={() => leaveParkingSpace('Foy_updated')}
                     color="#841584"
-                />
-                <Button
-                    title="Quit Program"
-                    onPress={QuitApplication}
-                    color="#841584" // You can customize the button color
                 />
             </ScrollView>
         </View>

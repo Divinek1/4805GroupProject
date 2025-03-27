@@ -15,7 +15,6 @@ export async function updateData() { // Testing updating tables, I think this co
     }
 }
 
-
 // How to call and test this function ->>>>>>>> onPress={() => takeParkingSpace('Foy_updated')}
 export async function takeParkingSpace(parkingLotID) {
     // Getting the current number of Available Parking Spots
