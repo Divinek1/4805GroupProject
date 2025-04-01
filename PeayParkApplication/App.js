@@ -6,7 +6,8 @@ import LoginPage from "./LoginPage"; // Importing LoginPage
 import SettingsPage from "./SettingsPage"; // Importing Settings Page
 import MapPage from "./MapPage"; // Importing Map Page
 import AdminPage from "./AdminPage"; // Importing Admin Page.
-import ReportingPage from "./ReportingPage.js"; // Importing Reporting Page.
+import ReportingPage from "./ReportingPage.js";
+
 
 const Stack = createNativeStackNavigator();
 
