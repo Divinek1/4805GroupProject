@@ -6,8 +6,7 @@ without having to log in to SupaBase on their website.
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, Modal, Alert, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { supabase } from './supabase';
-import SettingsPage from "./SettingsPage"; // Make sure to import your Supabase configuration
+import { supabase } from './supabase'; // Make sure to import supabase config.
 
 const AdminPage = () => {
     const navigation = useNavigation();
@@ -55,26 +54,26 @@ const AdminPage = () => {
         }
 
         // Validate coordinates
-        const latRegex = /^-?([1-8]?[1-9]|[1-9]0)\.\d{1,15}/;
-        const lonRegex = /^-?((1[0-7]|[1-9])?[0-9]|180)\.\d{1,15}/;
+        const latRegex = /^-?([1-8]?[1-9]|[1-9]0)\.\d{1,15}/; // Regex I found online.
+        const lonRegex = /^-?((1[0-7]|[1-9])?[0-9]|180)\.\d{1,15}/; // Regex I found online.
 
         if (!latRegex.test(formData.Latitude)) {
-            Alert.alert('Error', 'Invalid latitude format');
+            Alert.alert('Error', 'Invalid latitude format'); // Error Messages
             return false;
         }
         if (!lonRegex.test(formData.Longitude)) {
-            Alert.alert('Error', 'Invalid longitude format');
+            Alert.alert('Error', 'Invalid longitude format'); // Error Messages
             return false;
         }
 
         // Validate time format (HH:MM:SS)
-        const timeRegex = /^([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
+        const timeRegex = /^([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/; // More regex i found online.
         if (!timeRegex.test(formData.OpenHours)) {
-            Alert.alert('Error', 'Invalid open hours format. Use HH:MM:SS');
+            Alert.alert('Error', 'Invalid open hours format. Use HH:MM:SS'); // Error Messages
             return false;
         }
         if (!timeRegex.test(formData.CloseHours)) {
-            Alert.alert('Error', 'Invalid close hours format. Use HH:MM:SS');
+            Alert.alert('Error', 'Invalid close hours format. Use HH:MM:SS'); // Error Messages
             return false;
         }
 
