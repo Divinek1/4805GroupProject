@@ -1,10 +1,15 @@
+/*
+This is the MapPage, which is the center of the application. It includes a map interface that is used to show users
+parking lots available and/or full near the user's location (calculated by longitude and latitude).
+ */
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from "expo-location";
-import {supabase} from './supabase';
+import { supabase } from './supabase';
+import { Ionicons } from '@expo/vector-icons'; // Import the Ionicons library
 
-const MapPage = () => {
+const MapPage = ({ navigation }) => { // Accept navigation prop
     const [currentLocation, setCurrentLocation] = useState(null);
     const [mapRef, setMapRef] = useState(null);
     const [parkingLots, setParkingLots] = useState([]);
@@ -87,6 +92,9 @@ const MapPage = () => {
                     ))}
                 </MapView>
             )}
+            <TouchableOpacity style={styles.settingsButton} onPress={() => navigation.navigate("SettingsPage")}>
+                <Ionicons name="settings" size={30} color="red" />
+            </TouchableOpacity>
         </View>
     );
 };
@@ -100,6 +108,15 @@ const styles = StyleSheet.create({
     map: {
         width: "100%",
         height: "100%",
+    },
+    settingsButton: {
+        position: 'absolute',
+        top: 40, // Adjust as needed
+        left: 20, // Adjust as needed
+        backgroundColor: 'white', // Optional: background color for better visibility
+        borderRadius: 20, // Optional: rounded corners
+        padding: 10, // Optional: padding for the button
+        elevation: 5, // Optional: shadow effect
     },
 });
 
