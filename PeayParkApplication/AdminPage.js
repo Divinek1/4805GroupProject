@@ -149,7 +149,7 @@ const AdminPage = () => {
             <View style={styles.header}>
                 <TouchableOpacity
                     style={styles.backButton}
-                    onPress={() => navigation.navigate(SettingsPage)}
+                    onPress={() => navigation.goBack()}
                 >
                     <Text style={styles.backButtonText}>Back</Text>
                 </TouchableOpacity>
