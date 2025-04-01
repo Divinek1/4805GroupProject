@@ -1,5 +1,12 @@
+// GOOD JOB MITCHELL
+// I am re-arranging pages, so I am adding a bypass login button while you are working so we can keep testing our pages
+// without messing with your stuff! -CD
+/*
+This is the login page that contains both the application user interface page and the functions necessary
+for logging into the parking system as a guest, faculty member, student, or administrator.
+ */
 import React from 'react';
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {Button, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 
 const LoginPage = ({ navigation }) => {
     return (
@@ -47,6 +54,13 @@ const LoginPage = ({ navigation }) => {
             {/* APSU Branding */}
             <Text style={styles.apsuText}>Austin Peay State University</Text>
             <Text style={styles.apsuSubText}>CLARKSVILLE • TENNESSEE</Text>
+
+
+            <Button // Special Button WILL REMOVE LATER
+                title="Bypass Login"
+                onPress={() => navigation.navigate("MapPage")} // Navigate to MapPage
+                color="#FF0000"
+            />
         </View>
 
     );

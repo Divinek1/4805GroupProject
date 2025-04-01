@@ -1,3 +1,7 @@
+/*
+This is the Administration Page. It includes a graphical user interface for the user (specifically those designated as
+administrators).
+ */
 import React from 'react';
 import { View, Text, TextInput, FlatList, Image, StyleSheet } from 'react-native';
 
