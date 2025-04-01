@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import {View, TextInput, Text, Button, FlatList, Modal, Alert, Image, ActivityIndicator, StyleSheet
-} from 'react-native';
+import {View, TextInput, Text, Button, FlatList, Modal, Alert, Image, ActivityIndicator, StyleSheet} from 'react-native';
 import { supabase } from './supabase';
 
 const ReportingPage = () => {
@@ -37,7 +36,8 @@ const ReportingPage = () => {
                     }
                 ]);
 
-            if (error) throw error;
+            if (error)
+                throw error;
 
             Alert.alert("Success", "Report submitted successfully!");
             setReports([...reports, `Report ${reportId}`]);
