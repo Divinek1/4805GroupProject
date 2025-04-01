@@ -3,8 +3,8 @@ This is the Administration Page. It includes a graphical user interface for the 
 administrators). It also includes forms for administrators to change the SupaBase Parking Lot Table from within the app
 without having to log in to SupaBase on their website.
  */
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Modal, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Modal, Alert, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from './supabase';
 import SettingsPage from "./SettingsPage"; // Make sure to import your Supabase configuration
@@ -12,6 +12,7 @@ import SettingsPage from "./SettingsPage"; // Make sure to import your Supabase 
 const AdminPage = () => {
     const navigation = useNavigation();
     const [modalVisible, setModalVisible] = useState(false);
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         ParkingLotID: '',
@@ -21,8 +22,28 @@ const AdminPage = () => {
         TotalSpaces: '',
         OpenHours: '',
         CloseHours: '',
-        LotType: ''
+        LotType: '',
     });
+    const [parkingLots, setParkingLots] = useState([]);
+    const [selectedParkingLot, setSelectedParkingLot] = useState(null);
+
+    useEffect(() => {
+        fetchParkingLots();
+    }, []);
+
+    const fetchParkingLots = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('Parking Lot Table')
+                .select('ParkingLotID');
+
+            if (error) throw error;
+
+            setParkingLots(data);
+        } catch (error) {
+            Alert.alert('Error', error.message);
+        }
+    };
 
     const validateForm = () => {
         // Validate required fields
@@ -90,8 +111,31 @@ const AdminPage = () => {
                 TotalSpaces: '',
                 OpenHours: '',
                 CloseHours: '',
-                LotType: ''
+                LotType: '',
             });
+        } catch (error) {
+            Alert.alert('Error', error.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!selectedParkingLot) return;
+
+        setIsLoading(true);
+        try {
+            const { error } = await supabase
+                .from('Parking Lot Table')
+                .delete()
+                .eq('ParkingLotID', selectedParkingLot);
+
+            if (error) throw error;
+
+            Alert.alert('Success', 'Parking lot deleted successfully!');
+            setDeleteModalVisible(false);
+            fetchParkingLots(); // Refresh the list
+            setSelectedParkingLot(null);
         } catch (error) {
             Alert.alert('Error', error.message);
         } finally {
@@ -121,7 +165,13 @@ const AdminPage = () => {
                     <Text style={styles.optionText}>Add Parking Lot</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.optionButton}>
+                <TouchableOpacity
+                    style={styles.optionButton}
+                    onPress={() => {
+                        fetchParkingLots(); // Make sure to fetch the latest parking lots
+                        setDeleteModalVisible(true);
+                    }}
+                >
                     <Text style={styles.optionText}>Delete Parking Lot</Text>
                 </TouchableOpacity>
 
@@ -146,7 +196,7 @@ const AdminPage = () => {
                             style={styles.input}
                             placeholder="Parking Lot Name"
                             value={formData.ParkingLotID}
-                            onChangeText={(text) => setFormData({...formData, ParkingLotID: text})}
+                            onChangeText={(text) => setFormData({ ...formData, ParkingLotID: text })}
                         />
 
                         <Text style={styles.label}>Latitude</Text>
@@ -154,7 +204,7 @@ const AdminPage = () => {
                             style={styles.input}
                             placeholder="Latitude"
                             value={formData.Latitude}
-                            onChangeText={(text) => setFormData({...formData, Latitude: text})}
+                            onChangeText={(text) => setFormData({ ...formData, Latitude: text })}
                             keyboardType="default"
                         />
 
@@ -163,8 +213,8 @@ const AdminPage = () => {
                             style={styles.input}
                             placeholder="Longitude"
                             value={formData.Longitude}
-                            onChangeText={(text) => setFormData({...formData, Longitude: text})}
-                            keyboardType="default" // Change this line
+                            onChangeText={(text) => setFormData({ ...formData, Longitude: text })}
+                            keyboardType="default"
                         />
 
                         <Text style={styles.label}>Available Spaces</Text>
@@ -172,7 +222,7 @@ const AdminPage = () => {
                             style={styles.input}
                             placeholder="Available Spaces"
                             value={formData.AvailableSpaces}
-                            onChangeText={(text) => setFormData({...formData, AvailableSpaces: text})}
+                            onChangeText={(text) => setFormData({ ...formData, AvailableSpaces: text })}
                             keyboardType="numeric"
                         />
 
@@ -181,7 +231,7 @@ const AdminPage = () => {
                             style={styles.input}
                             placeholder="Total Spaces"
                             value={formData.TotalSpaces}
-                            onChangeText={(text) => setFormData({...formData, TotalSpaces: text})}
+                            onChangeText={(text) => setFormData({ ...formData, TotalSpaces: text })}
                             keyboardType="numeric"
                         />
 
@@ -190,7 +240,7 @@ const AdminPage = () => {
                             style={styles.input}
                             placeholder="Open Hours (HH:MM:SS)"
                             value={formData.OpenHours}
-                            onChangeText={(text) => setFormData({...formData, OpenHours: text})}
+                            onChangeText={(text) => setFormData({ ...formData, OpenHours: text })}
                         />
 
                         <Text style={styles.label}>Close Time (HH:MM:SS)</Text>
@@ -198,7 +248,7 @@ const AdminPage = () => {
                             style={styles.input}
                             placeholder="Close Hours (HH:MM:SS)"
                             value={formData.CloseHours}
-                            onChangeText={(text) => setFormData({...formData, CloseHours: text})}
+                            onChangeText={(text) => setFormData({ ...formData, CloseHours: text })}
                         />
 
                         <Text style={styles.label}>Lot Type (Student, Faculty, Guest)</Text>
@@ -206,7 +256,7 @@ const AdminPage = () => {
                             style={styles.input}
                             placeholder="LotType"
                             value={formData.LotType}
-                            onChangeText={(text) => setFormData({...formData, LotType: text})}
+                            onChangeText={(text) => setFormData({ ...formData, LotType: text })}
                         />
 
                         <View style={styles.modalButtons}>
@@ -223,6 +273,56 @@ const AdminPage = () => {
                             >
                                 <Text style={styles.modalButtonText}>
                                     {isLoading ? 'Submitting...' : 'Submit'}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Delete Parking Lot Modal */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={deleteModalVisible}
+                onRequestClose={() => setDeleteModalVisible(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Delete Parking Lot</Text>
+                        <FlatList
+                            data={parkingLots}
+                            keyExtractor={(item) => item.ParkingLotID}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity
+                                    onPress={() => setSelectedParkingLot(item.ParkingLotID)}
+                                    style={{
+                                        padding: 10,
+                                        backgroundColor: selectedParkingLot === item.ParkingLotID ? '#FF3B30' : '#fff',
+                                        marginBottom: 5,
+                                        borderRadius: 5,
+                                    }}
+                                >
+                                    <Text style={{ color: selectedParkingLot === item.ParkingLotID ? '#fff' : '#000' }}>
+                                        {item.ParkingLotID}
+                                    </Text>
+                                </TouchableOpacity>
+                            )}
+                        />
+                        <View style={styles.modalButtons}>
+                            <TouchableOpacity
+                                style={[styles.modalButton, styles.cancelButton]}
+                                onPress={() => setDeleteModalVisible(false)}
+                            >
+                                <Text style={styles.modalButtonText}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.modalButton, styles.submitButton]}
+                                onPress={handleDelete}
+                                disabled={isLoading || !selectedParkingLot}
+                            >
+                                <Text style={styles.modalButtonText}>
+                                    {isLoading ? 'Deleting...' : 'Delete'}
                                 </Text>
                             </TouchableOpacity>
                         </View>
