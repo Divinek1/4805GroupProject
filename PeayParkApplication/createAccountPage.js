@@ -1,6 +1,6 @@
 import React from 'react';
 import React from 'react';
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {Button, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 
 const LoginPage = ({ navigation }) => {
     return (
@@ -49,6 +49,12 @@ const LoginPage = ({ navigation }) => {
 
             <Text style={styles.apsuText}>Austin Peay State University</Text>
             <Text style={styles.apsuSubText}>CLARKSVILLE • TENNESSEE</Text>
+
+            <Button // Special Button WILL REMOVE LATER
+                title="Bypass Login"
+                onPress={() => navigation.navigate("MapPage")} // Navigate to MapPage
+                color="#FF0000"
+            />
         </View>
 
     );
