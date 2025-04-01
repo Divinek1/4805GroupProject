@@ -1,7 +1,25 @@
-import React from 'react';
+//import React from 'react';
+import React, {useState} from 'react';
+import {supabase} from "./supabase";
 import {Button, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 
 const LoginPage = ({ navigation }) => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleLogin = async () => {
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+
+        if (error) {
+            Alert.alert('Login Failed', error.message);
+        } else {
+            navigation.navigate("Home"); // Adjust to your main screen
+        }
+    };
+
     return (
 
         <View style={styles.container}>
@@ -24,12 +42,10 @@ const LoginPage = ({ navigation }) => {
             />
 
             {/* Active Log In button */}
-            <TouchableOpacity
-                style={styles.loginButton}
-                onPress={() => navigation.navigate("Home")} // Change "Home" to whatever your main screen is
-            >
+            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
                 <Text style={styles.loginButtonText}>Log In</Text>
             </TouchableOpacity>
+
 
             {/* Forgot Password */}
             <TouchableOpacity>
