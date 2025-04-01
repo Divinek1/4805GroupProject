@@ -133,7 +133,7 @@ const AdminPage = () => {
 
             Alert.alert('Success', 'Parking lot deleted successfully!');
             setDeleteModalVisible(false);
-            fetchParkingLots(); // Refresh the list
+            await fetchParkingLots(); // Refresh the list
             setSelectedParkingLot(null);
         } catch (error) {
             Alert.alert('Error', error.message);
