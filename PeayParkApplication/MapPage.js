@@ -4,7 +4,7 @@ parking lots available and/or full near the user's location (calculated by longi
  */
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Text, Alert, ScrollView } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker} from 'react-native-maps';
 import * as Location from "expo-location";
 import { supabase } from './supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -50,7 +50,7 @@ const MapPage = ({ navigation }) => {
                 parseFloat(lot.Longitude)
             );
 
-            if (distance <= 100) { // Within 100 feet
+            if (distance <= 300) { // Within 200 feet
                 if (!nearbyParkingLot) {
                     setNearbyParkingLot(lot);
                     setShowParkButton(true);
@@ -213,7 +213,11 @@ const MapPage = ({ navigation }) => {
                             longitude: currentLocation.longitude,
                         }}
                         title="Your Current Location"
-                    />
+                    >
+                        <View style={styles.markerContainer}>
+                            <Ionicons name="car" size={30} color="red" />
+                        </View>
+                    </Marker>
                     {filteredParkingLots.map((lot) => (
                         <Marker
                             key={lot.ParkingLotID}
@@ -223,7 +227,11 @@ const MapPage = ({ navigation }) => {
                             }}
                             title={lot.ParkingLotID}
                             description={`Available Spaces: ${lot.AvailableSpaces}`}
-                        />
+                        >
+                            <View style={styles.markerContainer}>
+                                <Ionicons name="location" size={30} color="black" />
+                            </View>
+                        </Marker>
                     ))}
                 </MapView>
             )}
@@ -308,6 +316,10 @@ const styles = StyleSheet.create({
     map: {
         width: "100%",
         height: "100%",
+    },
+    markerContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     settingsButton: {
         position: 'absolute',
