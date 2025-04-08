@@ -27,7 +27,7 @@ const SettingsPage = () => {
                 <View style={styles.buttonContainer}>
                     <Button
                         title="Dummy Setting (Use this to add stuff)"
-                        // onPress={} Call the imported function
+                        // onPress={} Call the imported function. (Don't forget to import at top of screen)
                         color="#841584"
                     />
                 </View>

@@ -171,6 +171,7 @@ const MapPage = ({ navigation }) => {
         fetchParkingLots();
     }, []);
 
+    // Parking Lot Classification Filter (Faculty, Guest, Student)
     useEffect(() => {
         const filtered = parkingLots.filter(lot => {
             if (lot.LotType === 'Faculty' && filters.faculty) return true;
@@ -230,13 +231,13 @@ const MapPage = ({ navigation }) => {
                 <Ionicons name="settings" size={30} color="red" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.recenterButton} onPress={handleRecenter}>
-                <Ionicons name="locate" size={24} color="blue" />
+                <Ionicons name="locate" size={24} color="#FF0000" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.mapTypeButton} onPress={toggleMapType}>
                 <Ionicons
                     name={mapType === 'standard' ? 'map' : 'map-outline'}
                     size={24}
-                    color="blue"
+                    color="#FF0000"
                 />
             </TouchableOpacity>
             {showParkButton && (
@@ -399,7 +400,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#666',
     },
     checkmark: {
-        color: 'white',
+        color: '#FF0000',
         fontSize: 14,
     },
     filterText: {

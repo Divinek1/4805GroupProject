@@ -4,9 +4,10 @@ administrators). It also includes forms for administrators to change the SupaBas
 without having to log in to SupaBase on their website.
  */
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Modal, Alert, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Modal, Alert, FlatList, Platform, Keyboard } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from './supabase'; // Make sure to import supabase config.
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const AdminPage = () => {
     const navigation = useNavigation();
@@ -14,14 +15,16 @@ const AdminPage = () => {
     const [modifyModalVisible, setModifyModalVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [showOpenTimePicker, setShowOpenTimePicker] = useState(false);
+    const [showCloseTimePicker, setShowCloseTimePicker] = useState(false);
     const [formData, setFormData] = useState({
         ParkingLotID: '',
         Latitude: '',
         Longitude: '',
         AvailableSpaces: '',
         TotalSpaces: '',
-        OpenHours: '',
-        CloseHours: '',
+        OpenHours: '00:00:00',
+        CloseHours: '00:00:00',
         LotType: '',
     });
     const [parkingLots, setParkingLots] = useState([]);
@@ -49,7 +52,7 @@ const AdminPage = () => {
         // Validate required fields
         if (!formData.ParkingLotID || !formData.Latitude || !formData.Longitude ||
             !formData.AvailableSpaces || !formData.TotalSpaces ||
-            !formData.OpenHours || !formData.CloseHours) {
+            !formData.OpenHours || !formData.CloseHours || !formData.LotType) {
             Alert.alert('Error', 'All fields are required');
             return false;
         }
@@ -64,17 +67,6 @@ const AdminPage = () => {
         }
         if (!lonRegex.test(formData.Longitude)) {
             Alert.alert('Error', 'Invalid longitude format');
-            return false;
-        }
-
-        // Validate time format (HH:MM:SS)
-        const timeRegex = /^([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
-        if (!timeRegex.test(formData.OpenHours)) {
-            Alert.alert('Error', 'Invalid open hours format. Use HH:MM:SS');
-            return false;
-        }
-        if (!timeRegex.test(formData.CloseHours)) {
-            Alert.alert('Error', 'Invalid close hours format. Use HH:MM:SS');
             return false;
         }
 
@@ -167,11 +159,109 @@ const AdminPage = () => {
             Longitude: '',
             AvailableSpaces: '',
             TotalSpaces: '',
-            OpenHours: '',
-            CloseHours: '',
+            OpenHours: '00:00:00',
+            CloseHours: '00:00:00',
             LotType: '',
         });
     };
+
+    const formatTime = (date) => {
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}:00`;
+    };
+
+    const handleTimeChange = (event, selectedDate, timeType) => {
+        const currentDate = selectedDate || new Date();
+
+        // Close the time picker for both platforms
+        if (timeType === 'OpenHours') {
+            setShowOpenTimePicker(false);
+        } else {
+            setShowCloseTimePicker(false);
+        }
+
+        // Only update the time if a date was selected (user didn't cancel)
+        if (selectedDate) {
+            const formattedTime = formatTime(currentDate);
+            setFormData({
+                ...formData,
+                [timeType]: formattedTime
+            });
+        }
+    };
+
+    const TimePickerField = ({ label, value, onPress, showPicker, onTimeChange }) => {
+        const timeValue = new Date();
+        const [hours, minutes] = value.split(':');
+        timeValue.setHours(parseInt(hours));
+        timeValue.setMinutes(parseInt(minutes));
+
+        return (
+            <>
+                <Text style={styles.label}>{label}</Text>
+                <TouchableOpacity
+                    style={styles.timePickerButton}
+                    onPress={onPress}
+                >
+                    <Text style={styles.timePickerButtonText}>{value}</Text>
+                </TouchableOpacity>
+                {showPicker && (
+                    <DateTimePicker
+                        value={timeValue}
+                        mode="time"
+                        is24Hour={true}
+                        display="spinner"
+                        onChange={onTimeChange}
+                        themeVariant="light"
+                        textColor="black"
+                        style={{ backgroundColor: 'white' }}
+                    />
+                )}
+            </>
+        );
+    };
+
+    const LotTypeSelector = ({ value, onChange }) => (
+        <View style={styles.lotTypeContainer}>
+            <TouchableOpacity
+                style={[
+                    styles.lotTypeButton,
+                    value === 'Student' && styles.lotTypeButtonSelected
+                ]}
+                onPress={() => onChange('Student')}
+            >
+                <Text style={[
+                    styles.lotTypeButtonText,
+                    value === 'Student' && styles.lotTypeButtonTextSelected
+                ]}>Student</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                style={[
+                    styles.lotTypeButton,
+                    value === 'Faculty' && styles.lotTypeButtonSelected
+                ]}
+                onPress={() => onChange('Faculty')}
+            >
+                <Text style={[
+                    styles.lotTypeButtonText,
+                    value === 'Faculty' && styles.lotTypeButtonTextSelected
+                ]}>Faculty</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                style={[
+                    styles.lotTypeButton,
+                    value === 'Guest' && styles.lotTypeButtonSelected
+                ]}
+                onPress={() => onChange('Guest')}
+            >
+                <Text style={[
+                    styles.lotTypeButtonText,
+                    value === 'Guest' && styles.lotTypeButtonTextSelected
+                ]}>Guest</Text>
+            </TouchableOpacity>
+        </View>
+    );
 
     return (
         <View style={styles.container}>
@@ -257,42 +347,44 @@ const AdminPage = () => {
                         <TextInput
                             style={styles.input}
                             placeholder="Available Spaces"
-                            value={formData.AvailableSpaces.toString()} // Convert to string for TextInput
+                            value={formData.AvailableSpaces.toString()}
                             onChangeText={(text) => setFormData({ ...formData, AvailableSpaces: text })}
                             keyboardType="numeric"
+                            returnKeyType="done"
+                            onSubmitEditing={() => Keyboard.dismiss()}
                         />
 
                         <Text style={styles.label}>Total Parking Spaces</Text>
                         <TextInput
                             style={styles.input}
                             placeholder="Total Spaces"
-                            value={formData.TotalSpaces.toString()} // Convert to string for TextInput
+                            value={formData.TotalSpaces.toString()}
                             onChangeText={(text) => setFormData({ ...formData, TotalSpaces: text })}
                             keyboardType="numeric"
+                            returnKeyType="done"
+                            onSubmitEditing={() => Keyboard.dismiss()}
                         />
 
-                        <Text style={styles.label}>Open Time (HH:MM:SS)</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Open Hours (HH:MM:SS)"
+                        <TimePickerField
+                            label="Open Time"
                             value={formData.OpenHours}
-                            onChangeText={(text) => setFormData({ ...formData, OpenHours: text })}
+                            onPress={() => setShowOpenTimePicker(true)}
+                            showPicker={showOpenTimePicker}
+                            onTimeChange={(event, selectedDate) => handleTimeChange(event, selectedDate, 'OpenHours')}
                         />
 
-                        <Text style={styles.label}>Close Time (HH:MM:SS)</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Close Hours (HH:MM:SS)"
+                        <TimePickerField
+                            label="Close Time"
                             value={formData.CloseHours}
-                            onChangeText={(text) => setFormData({ ...formData, CloseHours: text })}
+                            onPress={() => setShowCloseTimePicker(true)}
+                            showPicker={showCloseTimePicker}
+                            onTimeChange={(event, selectedDate) => handleTimeChange(event, selectedDate, 'CloseHours')}
                         />
 
-                        <Text style={styles.label}>Lot Type (Student, Faculty, Guest)</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="LotType"
+                        <Text style={styles.label}>Lot Type</Text>
+                        <LotTypeSelector
                             value={formData.LotType}
-                            onChangeText={(text) => setFormData({ ...formData, LotType: text })}
+                            onChange={(value) => setFormData({ ...formData, LotType: value })}
                         />
 
                         <View style={styles.modalButtons}>
@@ -326,13 +418,7 @@ const AdminPage = () => {
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Modify Parking Lot</Text>
-                        <Text style={styles.label}>Parking Lot Name</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Parking Lot Name"
-                            value={formData.ParkingLotID}
-                            onChangeText={(text) => setFormData({ ...formData, ParkingLotID: text })}
-                        />
+                        <Text style={styles.label}>Select Parking Lot</Text>
                         <FlatList
                             data={parkingLots}
                             keyExtractor={(item) => item.ParkingLotID}
@@ -344,8 +430,8 @@ const AdminPage = () => {
                                             ParkingLotID: item.ParkingLotID,
                                             Latitude: item.Latitude,
                                             Longitude: item.Longitude,
-                                            AvailableSpaces: item.AvailableSpaces.toString(), // Convert to string
-                                            TotalSpaces: item.TotalSpaces.toString(), // Convert to string
+                                            AvailableSpaces: item.AvailableSpaces.toString(),
+                                            TotalSpaces: item.TotalSpaces.toString(),
                                             OpenHours: item.OpenHours,
                                             CloseHours: item.CloseHours,
                                             LotType: item.LotType,
@@ -364,6 +450,7 @@ const AdminPage = () => {
                                 </TouchableOpacity>
                             )}
                         />
+
                         {/* Form Fields for Modification */}
                         <Text style={styles.label}>Latitude</Text>
                         <TextInput
@@ -387,42 +474,44 @@ const AdminPage = () => {
                         <TextInput
                             style={styles.input}
                             placeholder="Available Spaces"
-                            value={formData.AvailableSpaces.toString()} // Convert to string
+                            value={formData.AvailableSpaces.toString()}
                             onChangeText={(text) => setFormData({ ...formData, AvailableSpaces: text })}
                             keyboardType="numeric"
+                            returnKeyType="done"
+                            onSubmitEditing={() => Keyboard.dismiss()}
                         />
 
                         <Text style={styles.label}>Total Parking Spaces</Text>
                         <TextInput
                             style={styles.input}
                             placeholder="Total Spaces"
-                            value={formData.TotalSpaces.toString()} // Convert to string
+                            value={formData.TotalSpaces.toString()}
                             onChangeText={(text) => setFormData({ ...formData, TotalSpaces: text })}
                             keyboardType="numeric"
+                            returnKeyType="done"
+                            onSubmitEditing={() => Keyboard.dismiss()}
                         />
 
-                        <Text style={styles.label}>Open Time (HH:MM:SS)</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Open Hours (HH:MM:SS)"
+                        <TimePickerField
+                            label="Open Time"
                             value={formData.OpenHours}
-                            onChangeText={(text) => setFormData({ ...formData, OpenHours: text })}
+                            onPress={() => setShowOpenTimePicker(true)}
+                            showPicker={showOpenTimePicker}
+                            onTimeChange={(event, selectedDate) => handleTimeChange(event, selectedDate, 'OpenHours')}
                         />
 
-                        <Text style={styles.label}>Close Time (HH:MM:SS)</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Close Hours (HH:MM:SS)"
+                        <TimePickerField
+                            label="Close Time"
                             value={formData.CloseHours}
-                            onChangeText={(text) => setFormData({ ...formData, CloseHours: text })}
+                            onPress={() => setShowCloseTimePicker(true)}
+                            showPicker={showCloseTimePicker}
+                            onTimeChange={(event, selectedDate) => handleTimeChange(event, selectedDate, 'CloseHours')}
                         />
 
-                        <Text style={styles.label}>Lot Type (Student, Faculty, Guest)</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="LotType"
+                        <Text style={styles.label}>Lot Type</Text>
+                        <LotTypeSelector
                             value={formData.LotType}
-                            onChangeText={(text) => setFormData({ ...formData, LotType: text })}
+                            onChange={(value) => setFormData({ ...formData, LotType: value })}
                         />
 
                         <View style={styles.modalButtons}>
@@ -437,9 +526,7 @@ const AdminPage = () => {
                                 onPress={handleModifySubmit}
                                 disabled={isLoading}
                             >
-                                <Text style={styles.modalButtonText}>
-                                    {isLoading ? 'Modifying...' : 'Modify'}
-                                </Text>
+                                <Text style={styles.modalButtonText}>Submit</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -589,6 +676,46 @@ const styles = StyleSheet.create({
         color: '#fff',
         textAlign: 'center',
         fontSize: 16,
+    },
+    label: {
+        fontSize: 16,
+        marginBottom: 5,
+        color: '#333',
+    },
+    lotTypeContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 15,
+    },
+    lotTypeButton: {
+        flex: 1,
+        padding: 10,
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        marginHorizontal: 5,
+        alignItems: 'center',
+    },
+    lotTypeButtonSelected: {
+        backgroundColor: '#FF0000',
+        borderColor: '#FF0000',
+    },
+    lotTypeButtonText: {
+        color: '#000',
+    },
+    lotTypeButtonTextSelected: {
+        color: '#fff',
+    },
+    timePickerButton: {
+        borderWidth: 1,
+        borderColor: '#ddd',
+        padding: 10,
+        borderRadius: 5,
+        marginBottom: 15,
+    },
+    timePickerButtonText: {
+        fontSize: 16,
+        color: '#333',
     },
 });
 
