@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
-import { updateData, takeParkingSpace, leaveParkingSpace } from './parkingFunctions';
 import AdminPage from "./AdminPage"; // Import functions
 
 const SettingsPage = () => {
@@ -25,21 +24,6 @@ const SettingsPage = () => {
             </View>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.buttonContainer}>
-                    <Button
-                        title="Update Parking Lot Name TEST"
-                        onPress={updateData} // Call the imported function
-                        color="#841584"
-                    />
-                    <Button
-                        title="Parking Lot Spaces -1 TEST"
-                        onPress={() => takeParkingSpace('Foy_updated')} // Call the imported function
-                        color="#841584"
-                    />
-                    <Button
-                        title="Parking Lot Spaces +1 Test"
-                        onPress={() => leaveParkingSpace('Foy_updated')} // Call the imported function
-                        color="#841584"
-                    />
                 </View>
             </ScrollView>
         </View>
