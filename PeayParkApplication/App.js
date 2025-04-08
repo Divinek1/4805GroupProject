@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginPage from "./LoginPage"; // Importing LoginPage
+import createAccountPage from './createAccountPage';
+import VerificationPage from './VerificationPage';
 import SettingsPage from "./SettingsPage"; // Importing Settings Page
 import MapPage from "./MapPage"; // Importing Map Page
 import AdminPage from "./AdminPage"; // Importing Admin Page.
@@ -21,6 +23,18 @@ export default function App() {
                     name="LoginPage"
                     component={LoginPage}
                     options={{ headerShown: false }} // Hide the header for LoginPage
+                />
+
+                <Stack.Screen
+                    name="createAccountPage"
+                    component={createAccountPage} // This is your Create Account page
+                    options={{ headerShown: false }} // Hide the header for SignupPage
+                />
+
+                <Stack.Screen
+                    name="VerificationPage"
+                    component={VerificationPage}
+                    options={{ headerShown: false }}
                 />
                 <Stack.Screen
                     name="MapPage"

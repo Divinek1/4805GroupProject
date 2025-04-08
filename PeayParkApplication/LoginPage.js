@@ -1,6 +1,7 @@
 //import React from 'react';
 import React, {useState} from 'react';
 import {supabase} from "./supabase";
+
 import {Alert, Button, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 
 const LoginPage = ({ navigation }) => {
@@ -8,21 +9,32 @@ const LoginPage = ({ navigation }) => {
     const [password, setPassword] = useState('');
 
     const handleLogin = async () => {
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
+        if (!email || !password) {
+            Alert.alert("Missing Info", "Please enter both email and password.");
+            return;
+        }
 
-        });
+        try {
+            // Use signInWithPassword() for email/password authentication
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
 
-        if (error) {
-            Alert.alert('Login Failed', error.message);
-        } else {
-            await supabase
-                .from('SupaBase_Account_Sample')
-            Alert.alert("Login Success", "Welcome!");
-            navigation.navigate("MapPage"); // Adjust to your main screen
+            if (error) {
+                console.error("Login error:", error.message);
+                Alert.alert("Login Failed", `Error: ${error.message}`);
+            } else {
+                console.log("Login success:", data.user);  // Check the user object
+                Alert.alert("Login Success", `Welcome ${data.user.email}!`);
+                navigation.navigate("MapPage");  // Redirect to MapPage after login
+            }
+        } catch (err) {
+            console.error("Unexpected error:", err);
+            Alert.alert("Login Error", "Something went wrong.");
         }
     };
+
 
     return (
 
@@ -65,10 +77,11 @@ const LoginPage = ({ navigation }) => {
             {/* Create Account button */}
             <TouchableOpacity
                 style={styles.createButton}
-                onPress={() => navigation.navigate("Signup")}
+                onPress={() => navigation.navigate("createAccountPage")}
             >
                 <Text style={styles.createButtonText}>Create an Account</Text>
             </TouchableOpacity>
+
 
             {/* APSU Branding */}
 
