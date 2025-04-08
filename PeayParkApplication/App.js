@@ -3,12 +3,12 @@ import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginPage from "./LoginPage"; // Importing LoginPage
-import createAccountPage from './createAccountPage';
 import VerificationPage from './VerificationPage';
 import SettingsPage from "./SettingsPage"; // Importing Settings Page
 import MapPage from "./MapPage"; // Importing Map Page
 import AdminPage from "./AdminPage"; // Importing Admin Page.
 import ReportingPage from "./ReportingPage.js";
+import createAccountPage from './createAccountPage';
 
 
 const Stack = createNativeStackNavigator();
