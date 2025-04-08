@@ -18,6 +18,7 @@ const MapPage = ({ navigation }) => {
     const [nearbyParkingLot, setNearbyParkingLot] = useState(null);
     const [showParkButton, setShowParkButton] = useState(false);
     const [isParked, setIsParked] = useState(false);
+    const [mapType, setMapType] = useState('standard'); // Add state for map type
     const [filters, setFilters] = useState({
         selectAll: true,
         faculty: true,
@@ -149,6 +150,11 @@ const MapPage = ({ navigation }) => {
         setFilters(newFilters);
     };
 
+    // Function to toggle map type
+    const toggleMapType = () => {
+        setMapType(prevType => prevType === 'standard' ? 'satellite' : 'standard');
+    };
+
     // This will trigger an error if the SupaBase table is missing or if the device simply can't make a connection. (Probably Expo Error)
     useEffect(() => {
         const fetchParkingLots = async () => {
@@ -192,6 +198,7 @@ const MapPage = ({ navigation }) => {
                 <MapView
                     style={styles.map}
                     ref={(ref) => setMapRef(ref)}
+                    mapType={mapType}
                     initialRegion={{
                         latitude: currentLocation.latitude,
                         longitude: currentLocation.longitude,
@@ -224,6 +231,13 @@ const MapPage = ({ navigation }) => {
             </TouchableOpacity>
             <TouchableOpacity style={styles.recenterButton} onPress={handleRecenter}>
                 <Ionicons name="locate" size={24} color="blue" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.mapTypeButton} onPress={toggleMapType}>
+                <Ionicons
+                    name={mapType === 'standard' ? 'map' : 'map-outline'}
+                    size={24}
+                    color="blue"
+                />
             </TouchableOpacity>
             {showParkButton && (
                 <TouchableOpacity
@@ -307,6 +321,19 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 30,
         right: 20,
+        backgroundColor: 'white',
+        borderRadius: 25,
+        padding: 12,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+    },
+    mapTypeButton: {
+        position: 'absolute',
+        bottom: 30,
+        left: 20,
         backgroundColor: 'white',
         borderRadius: 25,
         padding: 12,
