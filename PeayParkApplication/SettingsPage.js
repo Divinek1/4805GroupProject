@@ -26,16 +26,6 @@ const SettingsPage = () => {
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.buttonContainer}>
                     <Button
-                        title="Set Map Overlay to Digital"
-                        onPress={() => {/* Add your function here */}}
-                        color="#841584"
-                    />
-                    <Button
-                        title="Set Map Overlay to Satellite"
-                        onPress={() => {/* Add your function here */}}
-                        color="#841584"
-                    />
-                    <Button
                         title="Update Parking Lot Name TEST"
                         onPress={updateData} // Call the imported function
                         color="#841584"
