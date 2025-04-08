@@ -11,6 +11,7 @@ import { supabase } from './supabase'; // Make sure to import supabase config.
 const AdminPage = () => {
     const navigation = useNavigation();
     const [modalVisible, setModalVisible] = useState(false);
+    const [modifyModalVisible, setModifyModalVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -34,7 +35,7 @@ const AdminPage = () => {
         try {
             const { data, error } = await supabase
                 .from('Parking Lot Table')
-                .select('ParkingLotID');
+                .select('*'); // Fetch all fields
 
             if (error) throw error;
 
@@ -54,26 +55,26 @@ const AdminPage = () => {
         }
 
         // Validate coordinates
-        const latRegex = /^-?([1-8]?[1-9]|[1-9]0)\.\d{1,15}/; // Regex I found online.
-        const lonRegex = /^-?((1[0-7]|[1-9])?[0-9]|180)\.\d{1,15}/; // Regex I found online.
+        const latRegex = /^-?([1-8]?[1-9]|[1-9]0)\.\d{1,15}/; // Regex for Latitude
+        const lonRegex = /^-?((1[0-7]|[1-9])?[0-9]|180)\.\d{1,15}/; // Regex for Longitude
 
         if (!latRegex.test(formData.Latitude)) {
-            Alert.alert('Error', 'Invalid latitude format'); // Error Messages
+            Alert.alert('Error', 'Invalid latitude format');
             return false;
         }
         if (!lonRegex.test(formData.Longitude)) {
-            Alert.alert('Error', 'Invalid longitude format'); // Error Messages
+            Alert.alert('Error', 'Invalid longitude format');
             return false;
         }
 
         // Validate time format (HH:MM:SS)
-        const timeRegex = /^([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/; // More regex i found online.
+        const timeRegex = /^([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
         if (!timeRegex.test(formData.OpenHours)) {
-            Alert.alert('Error', 'Invalid open hours format. Use HH:MM:SS'); // Error Messages
+            Alert.alert('Error', 'Invalid open hours format. Use HH:MM:SS');
             return false;
         }
         if (!timeRegex.test(formData.CloseHours)) {
-            Alert.alert('Error', 'Invalid close hours format. Use HH:MM:SS'); // Error Messages
+            Alert.alert('Error', 'Invalid close hours format. Use HH:MM:SS');
             return false;
         }
 
@@ -102,16 +103,33 @@ const AdminPage = () => {
 
             Alert.alert('Success', 'Parking lot added successfully!');
             setModalVisible(false);
-            setFormData({
-                ParkingLotID: '',
-                Latitude: '',
-                Longitude: '',
-                AvailableSpaces: '',
-                TotalSpaces: '',
-                OpenHours: '',
-                CloseHours: '',
-                LotType: '',
-            });
+            resetFormData();
+        } catch (error) {
+            Alert.alert('Error', error.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleModifySubmit = async () => {
+        if (!validateForm()) return;
+
+        setIsLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from('Parking Lot Table')
+                .update(formData)
+                .eq('ParkingLotID', selectedParkingLot);
+
+            if (error) {
+                setIsLoading(false);
+                throw error;
+            }
+
+            Alert.alert('Success', 'Parking lot modified successfully!');
+            setModifyModalVisible(false);
+            resetFormData();
+            await fetchParkingLots();
         } catch (error) {
             Alert.alert('Error', error.message);
         } finally {
@@ -133,13 +151,26 @@ const AdminPage = () => {
 
             Alert.alert('Success', 'Parking lot deleted successfully!');
             setDeleteModalVisible(false);
-            await fetchParkingLots(); // Refresh the list
+            await fetchParkingLots();
             setSelectedParkingLot(null);
         } catch (error) {
             Alert.alert('Error', error.message);
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const resetFormData = () => {
+        setFormData({
+            ParkingLotID: '',
+            Latitude: '',
+            Longitude: '',
+            AvailableSpaces: '',
+            TotalSpaces: '',
+            OpenHours: '',
+            CloseHours: '',
+            LotType: '',
+        });
     };
 
     return (
@@ -167,19 +198,25 @@ const AdminPage = () => {
                 <TouchableOpacity
                     style={styles.optionButton}
                     onPress={() => {
-                        fetchParkingLots(); // Make sure to fetch the latest parking lots
+                        fetchParkingLots();
                         setDeleteModalVisible(true);
                     }}
                 >
                     <Text style={styles.optionText}>Delete Parking Lot</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.optionButton}>
+                <TouchableOpacity
+                    style={styles.optionButton}
+                    onPress={() => {
+                        fetchParkingLots();
+                        setModifyModalVisible(true);
+                    }}
+                >
                     <Text style={styles.optionText}>Modify Parking Lot</Text>
                 </TouchableOpacity>
             </View>
 
-            {/* Adding Parking Lot Modal. This form submits data to supabase. */}
+            {/* Adding Parking Lot Modal */}
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -189,7 +226,7 @@ const AdminPage = () => {
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Add New Parking Lot</Text>
-
+                        {/* Form Fields */}
                         <Text style={styles.label}>Parking Lot Name</Text>
                         <TextInput
                             style={styles.input}
@@ -220,7 +257,7 @@ const AdminPage = () => {
                         <TextInput
                             style={styles.input}
                             placeholder="Available Spaces"
-                            value={formData.AvailableSpaces}
+                            value={formData.AvailableSpaces.toString()} // Convert to string for TextInput
                             onChangeText={(text) => setFormData({ ...formData, AvailableSpaces: text })}
                             keyboardType="numeric"
                         />
@@ -229,7 +266,7 @@ const AdminPage = () => {
                         <TextInput
                             style={styles.input}
                             placeholder="Total Spaces"
-                            value={formData.TotalSpaces}
+                            value={formData.TotalSpaces.toString()} // Convert to string for TextInput
                             onChangeText={(text) => setFormData({ ...formData, TotalSpaces: text })}
                             keyboardType="numeric"
                         />
@@ -272,6 +309,136 @@ const AdminPage = () => {
                             >
                                 <Text style={styles.modalButtonText}>
                                     {isLoading ? 'Submitting...' : 'Submit'}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Modify Parking Lot Modal */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modifyModalVisible}
+                onRequestClose={() => setModifyModalVisible(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Modify Parking Lot</Text>
+                        <Text style={styles.label}>Parking Lot Name</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Parking Lot Name"
+                            value={formData.ParkingLotID}
+                            onChangeText={(text) => setFormData({ ...formData, ParkingLotID: text })}
+                        />
+                        <FlatList
+                            data={parkingLots}
+                            keyExtractor={(item) => item.ParkingLotID}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setSelectedParkingLot(item.ParkingLotID);
+                                        setFormData({
+                                            ParkingLotID: item.ParkingLotID,
+                                            Latitude: item.Latitude,
+                                            Longitude: item.Longitude,
+                                            AvailableSpaces: item.AvailableSpaces.toString(), // Convert to string
+                                            TotalSpaces: item.TotalSpaces.toString(), // Convert to string
+                                            OpenHours: item.OpenHours,
+                                            CloseHours: item.CloseHours,
+                                            LotType: item.LotType,
+                                        });
+                                    }}
+                                    style={{
+                                        padding: 10,
+                                        backgroundColor: selectedParkingLot === item.ParkingLotID ? '#FF3B30' : '#fff',
+                                        marginBottom: 5,
+                                        borderRadius: 5,
+                                    }}
+                                >
+                                    <Text style={{ color: selectedParkingLot === item.ParkingLotID ? '#fff' : '#000' }}>
+                                        {item.ParkingLotID}
+                                    </Text>
+                                </TouchableOpacity>
+                            )}
+                        />
+                        {/* Form Fields for Modification */}
+                        <Text style={styles.label}>Latitude</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Latitude"
+                            value={formData.Latitude}
+                            onChangeText={(text) => setFormData({ ...formData, Latitude: text })}
+                            keyboardType="default"
+                        />
+
+                        <Text style={styles.label}>Longitude</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Longitude"
+                            value={formData.Longitude}
+                            onChangeText={(text) => setFormData({ ...formData, Longitude: text })}
+                            keyboardType="default"
+                        />
+
+                        <Text style={styles.label}>Available Spaces</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Available Spaces"
+                            value={formData.AvailableSpaces.toString()} // Convert to string
+                            onChangeText={(text) => setFormData({ ...formData, AvailableSpaces: text })}
+                            keyboardType="numeric"
+                        />
+
+                        <Text style={styles.label}>Total Parking Spaces</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Total Spaces"
+                            value={formData.TotalSpaces.toString()} // Convert to string
+                            onChangeText={(text) => setFormData({ ...formData, TotalSpaces: text })}
+                            keyboardType="numeric"
+                        />
+
+                        <Text style={styles.label}>Open Time (HH:MM:SS)</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Open Hours (HH:MM:SS)"
+                            value={formData.OpenHours}
+                            onChangeText={(text) => setFormData({ ...formData, OpenHours: text })}
+                        />
+
+                        <Text style={styles.label}>Close Time (HH:MM:SS)</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Close Hours (HH:MM:SS)"
+                            value={formData.CloseHours}
+                            onChangeText={(text) => setFormData({ ...formData, CloseHours: text })}
+                        />
+
+                        <Text style={styles.label}>Lot Type (Student, Faculty, Guest)</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="LotType"
+                            value={formData.LotType}
+                            onChangeText={(text) => setFormData({ ...formData, LotType: text })}
+                        />
+
+                        <View style={styles.modalButtons}>
+                            <TouchableOpacity
+                                style={[styles.modalButton, styles.cancelButton]}
+                                onPress={() => setModifyModalVisible(false)}
+                            >
+                                <Text style={styles.modalButtonText}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.modalButton, styles.submitButton]}
+                                onPress={handleModifySubmit}
+                                disabled={isLoading}
+                            >
+                                <Text style={styles.modalButtonText}>
+                                    {isLoading ? 'Modifying...' : 'Modify'}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -388,7 +555,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         width: '90%',
         maxHeight: '90%',
-        zIndex: 2, // Ensure modal content is above other elements
+        zIndex: 2,
     },
     modalTitle: {
         fontSize: 20,

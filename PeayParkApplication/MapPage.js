@@ -3,18 +3,95 @@ This is the MapPage, which is the center of the application. It includes a map i
 parking lots available and/or full near the user's location (calculated by longitude and latitude).
  */
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, Alert, ScrollView } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from "expo-location";
 import { supabase } from './supabase';
 import { Ionicons } from '@expo/vector-icons';
+import { takeParkingSpace, leaveParkingSpace } from './parkingFunctions';
 
 const MapPage = ({ navigation }) => {
     const [currentLocation, setCurrentLocation] = useState(null);
     const [mapRef, setMapRef] = useState(null);
     const [parkingLots, setParkingLots] = useState([]);
     const [initialRegionSet, setInitialRegionSet] = useState(false);
+    const [nearbyParkingLot, setNearbyParkingLot] = useState(null);
+    const [showParkButton, setShowParkButton] = useState(false);
+    const [isParked, setIsParked] = useState(false);
+    const [filters, setFilters] = useState({
+        selectAll: true,
+        faculty: true,
+        student: true,
+        guest: true
+    });
+    const [filteredParkingLots, setFilteredParkingLots] = useState([]);
 
+    // Helper function to calculate distance between two coordinates in feet
+    const calculateDistance = (lat1, lon1, lat2, lon2) => {
+        const R = 20902231; // Earth's radius in feet
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a =
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    };
+
+    // Function to check if user is near any parking lot
+    const checkNearbyParkingLots = (userLocation) => {
+        for (const lot of parkingLots) {
+            const distance = calculateDistance(
+                userLocation.latitude,
+                userLocation.longitude,
+                parseFloat(lot.Latitude),
+                parseFloat(lot.Longitude)
+            );
+
+            if (distance <= 100) { // Within 100 feet
+                if (!nearbyParkingLot) {
+                    setNearbyParkingLot(lot);
+                    setShowParkButton(true);
+                }
+                return;
+            }
+        }
+        // If we get here, user is not near any lot
+        if (nearbyParkingLot) {
+            setNearbyParkingLot(null);
+            setShowParkButton(false);
+        }
+    };
+    // This handles the case of whether a user is "in" or "out" of a parking space. (Added another confirmation box)
+    const handlePark = () => {
+        if (nearbyParkingLot) {
+            if (!isParked) {
+                Alert.alert(
+                    'Confirm Parking',
+                    `Looks like you are currently parked in ${nearbyParkingLot.ParkingLotID}. Is that correct?`,
+                    [
+                        {
+                            text: 'No',
+                            style: 'cancel'
+                        },
+                        {
+                            text: 'Yes',
+                            onPress: () => {
+                                takeParkingSpace(nearbyParkingLot.ParkingLotID);
+                                setIsParked(true);
+                            }
+                        }
+                    ]
+                );
+            } else {
+                leaveParkingSpace(nearbyParkingLot.ParkingLotID);
+                setIsParked(false);
+            }
+        }
+    };
+
+    // Helps with Main Map Functions and refreshes the users location every 2 seconds
     useEffect(() => {
         const getLocation = async () => {
             try {
@@ -32,6 +109,7 @@ const MapPage = ({ navigation }) => {
                     },
                     (location) => {
                         setCurrentLocation(location.coords);
+                        checkNearbyParkingLots(location.coords);
                         // Only center the map on initial load
                         if (mapRef && !initialRegionSet) {
                             mapRef.animateToRegion({
@@ -49,8 +127,29 @@ const MapPage = ({ navigation }) => {
             }
         };
         getLocation();
-    }, [mapRef]);
+    }, [mapRef, parkingLots]);
 
+    // This helps to manage the filter
+    const handleFilterChange = (filterName) => {
+        let newFilters = { ...filters };
+
+        if (filterName === 'selectAll') {
+            const newValue = !filters.selectAll;
+            newFilters = {
+                selectAll: newValue,
+                faculty: newValue,
+                student: newValue,
+                guest: newValue
+            };
+        } else {
+            newFilters[filterName] = !filters[filterName];
+            newFilters.selectAll = newFilters.faculty && newFilters.student && newFilters.guest;
+        }
+
+        setFilters(newFilters);
+    };
+
+    // This will trigger an error if the SupaBase table is missing or if the device simply can't make a connection. (Probably Expo Error)
     useEffect(() => {
         const fetchParkingLots = async () => {
             const { data, error } = await supabase
@@ -65,6 +164,16 @@ const MapPage = ({ navigation }) => {
         };
         fetchParkingLots();
     }, []);
+
+    useEffect(() => {
+        const filtered = parkingLots.filter(lot => {
+            if (lot.LotType === 'Faculty' && filters.faculty) return true;
+            if (lot.LotType === 'Student' && filters.student) return true;
+            return lot.LotType === 'Guest' && filters.guest;
+
+        });
+        setFilteredParkingLots(filtered);
+    }, [filters, parkingLots]);
 
     const handleRecenter = () => {
         if (mapRef && currentLocation) {
@@ -97,7 +206,7 @@ const MapPage = ({ navigation }) => {
                         }}
                         title="Your Current Location"
                     />
-                    {parkingLots.map((lot) => (
+                    {filteredParkingLots.map((lot) => (
                         <Marker
                             key={lot.ParkingLotID}
                             coordinate={{
@@ -116,10 +225,65 @@ const MapPage = ({ navigation }) => {
             <TouchableOpacity style={styles.recenterButton} onPress={handleRecenter}>
                 <Ionicons name="locate" size={24} color="blue" />
             </TouchableOpacity>
+            {showParkButton && (
+                <TouchableOpacity
+                    style={[
+                        styles.parkButton,
+                        isParked && styles.unparkButton
+                    ]}
+                    onPress={handlePark}
+                >
+                    <Text style={styles.parkButtonText}>
+                        {isParked ? 'UNPARK' : 'PARK'}
+                    </Text>
+                </TouchableOpacity>
+            )}
+            <View style={styles.filterContainer}>
+                <ScrollView style={styles.filterBox}>
+                    <TouchableOpacity
+                        style={styles.filterOption}
+                        onPress={() => handleFilterChange('selectAll')}
+                    >
+                        <View style={[styles.checkbox, filters.selectAll && styles.checked]}>
+                            {filters.selectAll && <Text style={styles.checkmark}>✓</Text>}
+                        </View>
+                        <Text style={styles.filterText}>Select All</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.filterOption}
+                        onPress={() => handleFilterChange('faculty')}
+                    >
+                        <View style={[styles.checkbox, filters.faculty && styles.checked]}>
+                            {filters.faculty && <Text style={styles.checkmark}>✓</Text>}
+                        </View>
+                        <Text style={styles.filterText}>Faculty</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.filterOption}
+                        onPress={() => handleFilterChange('student')}
+                    >
+                        <View style={[styles.checkbox, filters.student && styles.checked]}>
+                            {filters.student && <Text style={styles.checkmark}>✓</Text>}
+                        </View>
+                        <Text style={styles.filterText}>Student</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.filterOption}
+                        onPress={() => handleFilterChange('guest')}
+                    >
+                        <View style={[styles.checkbox, filters.guest && styles.checked]}>
+                            {filters.guest && <Text style={styles.checkmark}>✓</Text>}
+                        </View>
+                        <Text style={styles.filterText}>Guest</Text>
+                    </TouchableOpacity>
+                </ScrollView>
+            </View>
         </View>
     );
 };
 
+
+// The styling takes so long. >:( -CD
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -151,6 +315,69 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
+    },
+    parkButton: {
+        position: 'absolute',
+        right: 20,
+        top: 40,
+        backgroundColor: 'red',
+        borderRadius: 10,
+        padding: 15,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+    },
+    unparkButton: {
+        backgroundColor: 'blue',
+    },
+    parkButtonText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    filterContainer: {
+        position: 'absolute',
+        right: 20,
+        top: 100,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        borderRadius: 10,
+        padding: 10,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+    },
+    filterBox: {
+        maxHeight: 200,
+    },
+    filterOption: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 8,
+    },
+    checkbox: {
+        width: 20,
+        height: 20,
+        borderWidth: 2,
+        borderColor: '#666',
+        borderRadius: 4,
+        marginRight: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    checked: {
+        backgroundColor: '#666',
+    },
+    checkmark: {
+        color: 'white',
+        fontSize: 14,
+    },
+    filterText: {
+        fontSize: 16,
+        color: '#333',
     }
 });
 
