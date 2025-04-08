@@ -1,7 +1,7 @@
 //import React from 'react';
 import React, {useState} from 'react';
 import {supabase} from "./supabase";
-import {Button, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {Alert, Button, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 
 const LoginPage = ({ navigation }) => {
     const [email, setEmail] = useState('');
@@ -11,12 +11,16 @@ const LoginPage = ({ navigation }) => {
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password,
+
         });
 
         if (error) {
             Alert.alert('Login Failed', error.message);
         } else {
-            navigation.navigate("Home"); // Adjust to your main screen
+            await supabase
+                .from('SupaBase_Account_Sample')
+            Alert.alert("Login Success", "Welcome!");
+            navigation.navigate("MapPage"); // Adjust to your main screen
         }
     };
 
@@ -31,6 +35,10 @@ const LoginPage = ({ navigation }) => {
                 style={styles.input}
                 placeholder="Email"
                 placeholderTextColor="#888"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
             />
 
             {/* Password input */}
@@ -39,6 +47,8 @@ const LoginPage = ({ navigation }) => {
                 placeholder="Password"
                 placeholderTextColor="#888"
                 secureTextEntry
+                value={password}
+                onChangeText={setPassword}
             />
 
             {/* Active Log In button */}
