@@ -235,6 +235,9 @@ const MapPage = ({ navigation }) => {
                     ))}
                 </MapView>
             )}
+            <TouchableOpacity style={styles.reportingButton} onPress={() => navigation.navigate("ReportingPage")}>
+                <Ionicons name="warning" size={30} color="red" />
+            </TouchableOpacity>
             <TouchableOpacity style={styles.settingsButton} onPress={() => navigation.navigate("SettingsPage")}>
                 <Ionicons name="settings" size={30} color="red" />
             </TouchableOpacity>
@@ -320,6 +323,15 @@ const styles = StyleSheet.create({
     markerContainer: {
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    reportingButton: {
+        position: 'absolute',
+        top: 40,
+        left: 70,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 10,
+        elevation: 5,
     },
     settingsButton: {
         position: 'absolute',
