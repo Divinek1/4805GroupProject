@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+
 import AdminPage from "./AdminPage"; // Import functions
 
 const SettingsPage = () => {
@@ -24,6 +25,11 @@ const SettingsPage = () => {
             </View>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.buttonContainer}>
+                    <Button
+                        title="Dummy Setting (Use this to add stuff)"
+                        onPress={} // Call the imported function
+                        color="#841584"
+                    />
                 </View>
             </ScrollView>
         </View>
