@@ -4,7 +4,7 @@ administrators). It also includes forms for administrators to change the SupaBas
 without having to log in to SupaBase on their website.
  */
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Modal, Alert, FlatList, Platform, Keyboard } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Modal, Alert, FlatList, Keyboard } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from './supabase'; // Make sure to import supabase config.
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -273,7 +273,7 @@ const AdminPage = () => {
                 >
                     <Text style={styles.backButtonText}>Back</Text>
                 </TouchableOpacity>
-                <Text style={styles.headerText}>Administrator</Text>
+                <Text style={styles.headerText}>Administrative Settings</Text>
             </View>
 
             {/* Main Administrator Options */}
@@ -442,6 +442,8 @@ const AdminPage = () => {
                                         backgroundColor: selectedParkingLot === item.ParkingLotID ? '#FF3B30' : '#fff',
                                         marginBottom: 5,
                                         borderRadius: 5,
+                                        borderWidth: 1,
+                                        borderColor: 'black'
                                     }}
                                 >
                                     <Text style={{ color: selectedParkingLot === item.ParkingLotID ? '#fff' : '#000' }}>
@@ -554,6 +556,8 @@ const AdminPage = () => {
                                         backgroundColor: selectedParkingLot === item.ParkingLotID ? '#FF3B30' : '#fff',
                                         marginBottom: 5,
                                         borderRadius: 5,
+                                        borderWidth: 1,
+                                        borderColor: 'black'
                                     }}
                                 >
                                     <Text style={{ color: selectedParkingLot === item.ParkingLotID ? '#fff' : '#000' }}>
@@ -588,11 +592,12 @@ const AdminPage = () => {
 
 const styles = StyleSheet.create({
     container: {
+        paddingTop: 30,
         flex: 1,
         backgroundColor: '#fff',
     },
     header: {
-        padding: 20,
+        padding: 5,
         backgroundColor: '#f5f5f5',
         flexDirection: 'row',
         alignItems: 'center',
@@ -611,12 +616,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     headerText: {
+        padding: 20,
         fontSize: 24,
         fontWeight: 'bold',
         flex: 1,
         textAlign: 'center',
     },
     optionsContainer: {
+        borderColor: 'black',
         padding: 20,
     },
     optionButton: {
@@ -637,6 +644,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContent: {
+        borderColor: 'black',
         backgroundColor: '#fff',
         padding: 20,
         borderRadius: 10,
@@ -658,6 +666,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     modalButtons: {
+        borderColor: 'black',
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
@@ -692,7 +701,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 5,
         borderWidth: 1,
-        borderColor: '#ddd',
+        borderColor: 'black',
         marginHorizontal: 5,
         alignItems: 'center',
     },
