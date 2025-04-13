@@ -3,12 +3,16 @@ import { supabase } from './supabase'; // Import the Supabase client
 import { Alert, TextInput, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 
 const CreateAccountPage = ({ navigation }) => {
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [userType, setUserType] = useState('Student'); // default to Student
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [reenterPassword, setReenterPassword] = useState('');
 
     const handleSignup = async () => {
-        if (!email || !password || !reenterPassword) {
+        if (!firstName || !lastName || !email || !password || !reenterPassword) {
             Alert.alert("Missing Info", "Please fill in all fields.");
             return;
         }
@@ -25,33 +29,32 @@ const CreateAccountPage = ({ navigation }) => {
         }
 
         try {
-            // Sign up with Supabase Auth
-            const { user, error } = await supabase.auth.signUp({
+            const { data, error } = await supabase.auth.signUp({
                 email,
-                password,
+                password
             });
 
-            // Log both user and error to understand the response
-            console.log("Signup Response: ", { user, error });
+
 
             if (error) {
-                console.error("Signup error:", error.message);
+                console.error("OTP signup error:", error.message);
                 Alert.alert("Signup Failed", `Error: ${error.message}`);
                 return;
             }
 
-            // Check if the user object is returned successfully
-            if (user) {
-                console.log("User created successfully:", user);  // Log the user object
-                Alert.alert("Signup Success", `A verification email has been sent to ${user.email}. Please verify your email.`);
-                navigation.navigate("VerificationPage", { email: user.email });
-            } else {
-                console.error("User is undefined or not returned from Supabase.");
-                Alert.alert("Signup Error", "There was an issue with the signup process.");
-            }
+            Alert.alert("Verification Sent", `Check your email (${email}) for a 6-digit code.`);
+
+            // Send info to verification screen
+            navigation.navigate("VerificationPage", {
+                email,
+                firstName,
+                lastName,
+                userType
+            });
+
         } catch (err) {
-            console.error("Unexpected error:", err);
-            Alert.alert("Signup Error", "Something went wrong.");
+            console.error("Unexpected Signup Error:", err);
+            Alert.alert("Unexpected Error", "Something went wrong during signup.");
         }
     };
 
@@ -59,6 +62,22 @@ const CreateAccountPage = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <Text style={styles.logo}>Create an Account</Text>
+
+            <TextInput
+                style={styles.input}
+                placeholder="First Name"
+                placeholderTextColor="#888"
+                value={firstName}
+                onChangeText={setFirstName}
+            />
+
+            <TextInput
+                style={styles.input}
+                placeholder="Last Name"
+                placeholderTextColor="#888"
+                value={lastName}
+                onChangeText={setLastName}
+            />
 
             <TextInput
                 style={styles.input}
@@ -87,6 +106,23 @@ const CreateAccountPage = ({ navigation }) => {
                 value={reenterPassword}
                 onChangeText={setReenterPassword}
             />
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginBottom: 10 }}>
+                <TouchableOpacity
+                    onPress={() => setUserType('Student')}
+                    style={[styles.userTypeButton, userType === 'Student' && styles.selectedButton]}
+                >
+                    <Text style={userType === 'Student' ? styles.selectedText : styles.userTypeText}>Student</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    onPress={() => setUserType('Faculty')}
+                    style={[styles.userTypeButton, userType === 'Faculty' && styles.selectedButton]}
+                >
+                    <Text style={userType === 'Faculty' ? styles.selectedText : styles.userTypeText}>Faculty</Text>
+                </TouchableOpacity>
+            </View>
+
 
             <TouchableOpacity onPress={handleSignup} style={styles.signupButton}>
                 <Text style={styles.signupButtonText}>Sign Up</Text>
@@ -153,6 +189,29 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#000',
     },
+    userTypeButton: {
+        flex: 1,
+        padding: 12,
+        marginHorizontal: 5,
+        borderRadius: 6,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        alignItems: 'center',
+    },
+    selectedButton: {
+        backgroundColor: '#d32f2f',
+        borderColor: '#d32f2f',
+    },
+    userTypeText: {
+        fontSize: 16,
+        color: '#000',
+    },
+    selectedText: {
+        fontSize: 16,
+        color: '#fff',
+        fontWeight: 'bold',
+    },
+
 });
 
 export default CreateAccountPage;
