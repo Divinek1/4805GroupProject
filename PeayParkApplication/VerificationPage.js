@@ -3,36 +3,52 @@ import { supabase } from './supabase'; // Import the Supabase client
 import { Alert, TextInput, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 
 const VerificationPage = ({ route, navigation }) => {
-    const { email } = route.params; // Get email from the previous screen's params
+    const { email, firstName, lastName, userType } = route.params;
+    // Get email from the previous screen's params
     const [verificationCode, setVerificationCode] = useState('');
 
-    const handleVerification = async () => {
-        if (!verificationCode) {
-            Alert.alert("Missing Code", "Please enter the verification code.");
+    const handleVerify = async () => {
+        const { data, error } = await supabase.auth.verifyOtp({
+            email,
+            token: verificationCode,
+            type: 'email'
+        });
+
+        if (error || !data?.user) {
+            console.error("Verification error:", error);
+            Alert.alert("Verification Failed", "Invalid or expired code.");
             return;
         }
 
-        try {
-            // Call Supabase to verify the email (no direct code verification needed)
-            const { user, error } = await supabase.auth.verifyOtp({
-                email,
-                token: verificationCode,
-                type: 'signup',
-            });
+        const user = data.user;
 
-            if (error) {
-                console.error("Verification error:", error.message);
-                Alert.alert("Verification Failed", `Error: ${error.message}`);
-            } else {
-                console.log("Verification success:", user);
-                Alert.alert("Email Verified", "Your email has been verified!");
-                navigation.navigate("LoginPage"); // Redirect to LoginPage after verification
-            }
-        } catch (err) {
-            console.error("Unexpected error:", err);
-            Alert.alert("Verification Error", "Something went wrong.");
+        // Insert profile data into your table
+        const { error: insertError } = await supabase
+            .from('SupaBase Account Sample')
+            .upsert(
+                [
+                    {
+                        UserID: user.id,
+                        UserType: userType,
+                        FirstName: firstName,
+                        LastName: lastName,
+                        Administrator_Access: 'false'
+                    }
+                ],
+                { onConflict: 'UserID' }
+            );
+        if (insertError) {
+            console.error("Insert error:", insertError);
+            Alert.alert("Verified, but failed to save profile.");
+            return;
         }
+
+        Alert.alert("Success", "Email verified and profile saved!");
+        navigation.navigate("LoginPage");
     };
+
+
+
 
     return (
         <View style={styles.container}>
@@ -48,7 +64,7 @@ const VerificationPage = ({ route, navigation }) => {
                 onChangeText={setVerificationCode}
             />
 
-            <TouchableOpacity onPress={handleVerification} style={styles.verifyButton}>
+            <TouchableOpacity onPress={handleVerify} style={styles.verifyButton}>
                 <Text style={styles.verifyButtonText}>Verify</Text>
             </TouchableOpacity>
 
