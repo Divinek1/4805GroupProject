@@ -18,7 +18,8 @@ const MapPage = ({ navigation }) => {
     const [nearbyParkingLot, setNearbyParkingLot] = useState(null);
     const [showParkButton, setShowParkButton] = useState(false);
     const [isParked, setIsParked] = useState(false);
-    const [mapType, setMapType] = useState('standard'); // Add state for map type
+    const [mapType, setMapType] = useState('standard');
+    const [currentUser, setCurrentUser] = useState(null);
     const [filters, setFilters] = useState({
         selectAll: true,
         faculty: true,
@@ -26,6 +27,49 @@ const MapPage = ({ navigation }) => {
         guest: true
     });
     const [filteredParkingLots, setFilteredParkingLots] = useState([]);
+
+    // Fetch current user and their parking status on component mount
+    useEffect(() => {
+        const fetchUserAndParkingStatus = async () => {
+            try {
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+                if (userError) {
+                    console.error("Auth error:", userError.message);
+                    return;
+                }
+
+                if (user) {
+                    setCurrentUser(user);
+
+                    // Fetch user's parking status from SupaBase Account Sample table
+                    const { data, error } = await supabase
+                        .from('SupaBase Account Sample')
+                        .select('ParkedLocation')
+                        .eq('UserID', user.id)
+                        .maybeSingle();  // Use maybeSingle() instead of single()
+
+                    if (error) {
+                        console.error("Error fetching user data:", error.message);
+                        return;
+                    }
+
+                    // If user has a ParkedLocation, update the UI
+                    if (data && data.ParkedLocation) {
+                        setIsParked(true);
+                        const parkedLot = parkingLots.find(lot => lot.ParkingLotID === data.ParkedLocation);
+                        if (parkedLot) {
+                            setNearbyParkingLot(parkedLot);
+                            setShowParkButton(true);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Error in fetchUserAndParkingStatus:", error.message);
+            }
+        };
+        fetchUserAndParkingStatus();
+    }, [parkingLots]);
 
     // Helper function to calculate distance between two coordinates in feet
     const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -50,7 +94,7 @@ const MapPage = ({ navigation }) => {
                 parseFloat(lot.Longitude)
             );
 
-            if (distance <= 300) { // Within 200 feet
+            if (distance <= 300) { // Within 300 feet
                 if (!nearbyParkingLot) {
                     setNearbyParkingLot(lot);
                     setShowParkButton(true);
@@ -64,8 +108,14 @@ const MapPage = ({ navigation }) => {
             setShowParkButton(false);
         }
     };
-    // This handles the case of whether a user is "in" or "out" of a parking space. (Added another confirmation box)
-    const handlePark = () => {
+
+    // Enhanced handlePark function with Supabase integration
+    const handlePark = async () => {
+        if (!currentUser) {
+            Alert.alert("Error", "User not authenticated");
+            return;
+        }
+
         if (nearbyParkingLot) {
             if (!isParked) {
                 Alert.alert(
@@ -78,16 +128,57 @@ const MapPage = ({ navigation }) => {
                         },
                         {
                             text: 'Yes',
-                            onPress: () => {
-                                takeParkingSpace(nearbyParkingLot.ParkingLotID);
-                                setIsParked(true);
+                            onPress: async () => {
+                                try {
+                                    // Update SupaBase Account Sample table
+                                    const { error } = await supabase
+                                        .from('SupaBase Account Sample')
+                                        .update({ ParkedLocation: nearbyParkingLot.ParkingLotID })
+                                        .eq('UserID', currentUser.id);
+
+                                    if (error) throw error;
+
+                                    await takeParkingSpace(nearbyParkingLot.ParkingLotID);
+                                    setIsParked(true);
+                                } catch (error) {
+                                    console.error("Error updating parking status:", error.message);
+                                    Alert.alert("Error", "Failed to update parking status");
+                                }
                             }
                         }
                     ]
                 );
             } else {
-                leaveParkingSpace(nearbyParkingLot.ParkingLotID);
-                setIsParked(false);
+                Alert.alert(
+                    'Confirm Unparking',
+                    'Are you sure you want to unpark?',
+                    [
+                        {
+                            text: 'No',
+                            style: 'cancel'
+                        },
+                        {
+                            text: 'Yes',
+                            onPress: async () => {
+                                try {
+                                    // Update SupaBase Account Sample table
+                                    const { error } = await supabase
+                                        .from('SupaBase Account Sample')
+                                        .update({ ParkedLocation: null })
+                                        .eq('UserID', currentUser.id);
+
+                                    if (error) throw error;
+
+                                    await leaveParkingSpace(nearbyParkingLot.ParkingLotID);
+                                    setIsParked(false);
+                                } catch (error) {
+                                    console.error("Error updating unparking status:", error.message);
+                                    Alert.alert("Error", "Failed to update unparking status");
+                                }
+                            }
+                        }
+                    ]
+                );
             }
         }
     };
@@ -130,6 +221,30 @@ const MapPage = ({ navigation }) => {
         getLocation();
     }, [mapRef, parkingLots]);
 
+    // Enhanced parking lots fetch with error handling and logging
+    useEffect(() => {
+        const fetchParkingLots = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('Parking Lot Table')
+                    .select('*');
+
+                if (error) throw error;
+
+                if (data) {
+                    console.log(`Fetched ${data.length} parking lots`);
+                    setParkingLots(data);
+                } else {
+                    console.log('No parking lots data received');
+                }
+            } catch (error) {
+                console.error("Error fetching parking lots: ", error);
+                Alert.alert("Error", "Failed to fetch parking lots data");
+            }
+        };
+        fetchParkingLots();
+    }, []);
+
     // This helps to manage the filter
     const handleFilterChange = (filterName) => {
         let newFilters = { ...filters };
@@ -155,29 +270,12 @@ const MapPage = ({ navigation }) => {
         setMapType(prevType => prevType === 'standard' ? 'satellite' : 'standard');
     };
 
-    // This will trigger an error if the SupaBase table is missing or if the device simply can't make a connection. (Probably Expo Error)
-    useEffect(() => {
-        const fetchParkingLots = async () => {
-            const { data, error } = await supabase
-                .from('Parking Lot Table')
-                .select('*');
-
-            if (error) {
-                console.error("Error fetching parking lots: ", error);
-            } else {
-                setParkingLots(data);
-            }
-        };
-        fetchParkingLots();
-    }, []);
-
     // Parking Lot Classification Filter (Faculty, Guest, Student)
     useEffect(() => {
         const filtered = parkingLots.filter(lot => {
             if (lot.LotType === 'Faculty' && filters.faculty) return true;
             if (lot.LotType === 'Student' && filters.student) return true;
             return lot.LotType === 'Guest' && filters.guest;
-
         });
         setFilteredParkingLots(filtered);
     }, [filters, parkingLots]);
@@ -307,7 +405,6 @@ const MapPage = ({ navigation }) => {
         </View>
     );
 };
-
 
 // The styling takes so long. >:( -CD
 const styles = StyleSheet.create({
