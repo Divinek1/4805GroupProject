@@ -54,7 +54,7 @@ export default function App() {
                 <Stack.Screen
                     name="SettingsPage"
                     component={SettingsPage}
-                    options={{ headerShown: true }} // Hide the header for SettingsPage
+                    options={{ headerShown: false }} // Hide the header for SettingsPage
                 />
             </Stack.Navigator>
         </NavigationContainer>
