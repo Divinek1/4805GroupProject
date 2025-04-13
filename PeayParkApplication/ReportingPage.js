@@ -53,7 +53,7 @@ const ReportingPage = () => {
 
             // Send email
             const result = await MailComposer.composeAsync({
-                recipients: ['parking.authority@example.com'], // Replace with actual email
+                recipients: ['fadedflowerfarms@gmail.com'], // Replace with actual email
                 subject: 'Parking Violation Report',
                 body: details || 'No additional details provided.',
                 attachments: [image]
