@@ -1,3 +1,6 @@
+/*
+Please put description here for this page and some comments @Mitchell.
+ */
 import React, { useState } from 'react';
 import { supabase } from './supabase'; // Import the Supabase client
 import { Alert, TextInput, TouchableOpacity, View, Text, StyleSheet } from 'react-native';

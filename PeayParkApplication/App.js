@@ -1,4 +1,9 @@
-// Main Application .js file. This is where it all starts! It takes you to LoginPage.js upon successful login.
+/*
+ Main Application .js file. This is where it all starts! It takes you to LoginPage.js upon successful login. It also
+ manages the StackScreen for the entire application and allows us to navigate freely through each of the pages,
+ represented by various .js files.
+ */
+
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -12,6 +17,7 @@ import ReportingPage from "./ReportingPage.js";
 import createAccountPage from './createAccountPage';
 
 const Stack = createNativeStackNavigator();
+
 
 export default function App() {
     return (

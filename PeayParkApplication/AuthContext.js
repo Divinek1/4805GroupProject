@@ -2,7 +2,7 @@
 This is the AuthContext.js file. It takes care of user sessions and allows the user to stay logged in even after closing
 the application. They will stay logged in until they navigate to SettingsPage.js and log out. This file was created with
 the help of BlackBox.ai. It was used to help fix the bugs in this file and tell us what import was the best to use and,
-most importantly, how to use the component AsyncStorage.
+most importantly, how to use the component AsyncStorage. It also includes error checking.
  */
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
         // This checks for a stored session when the application is opened by a user.
         checkUser();
 
-        // Listen for auth state changes
+        // Listen for any changes in the authorization state (such as logout)
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             if (session?.user) {
                 setUser(session.user);

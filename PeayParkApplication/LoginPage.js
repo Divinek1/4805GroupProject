@@ -1,3 +1,7 @@
+/*
+Please put description here for this page and some comments @Mitchell.
+ */
+
 import React, {useState, useEffect} from 'react';
 import {supabase} from "./supabase";
 import {Alert, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
