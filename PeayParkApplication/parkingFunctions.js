@@ -1,7 +1,6 @@
-// This is parkingFunction.js where we will store methods methods for SupaBase for cleanliness.
+// This is parkingFunction.js where we will store methods for SupaBase for cleanliness.
 import {supabase} from './supabase';
 
-// How to call and test this function ->>>>>>>> onPress={() => takeParkingSpace('Foy_updated')}
 // This functions works with SupaBase to decrement the parking space of the chosen parking lot from the table in SupaBase.
 export async function takeParkingSpace(parkingLotID) {
     // Getting the current number of Available Parking Spots

@@ -1,4 +1,6 @@
-// supabase.js
+/*
+This is the supabase file that takes care of allowing the application to commnunicate back and forth with supabase.
+ */
 
 import 'react-native-url-polyfill/auto';
 import { createClient } from '@supabase/supabase-js';

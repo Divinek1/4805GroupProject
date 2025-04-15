@@ -1,3 +1,8 @@
+/*
+This is the ReportingPage.js that allows a user to take a photo of a parking infraction that they would like to report.
+This report is then formatted and the default mail application is opened on the user's device with the formatted email
+ready to be sent to relevant parking authoritie' email.
+ */
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image, Alert, Keyboard } from 'react-native';
 import { useNavigation } from '@react-navigation/native';

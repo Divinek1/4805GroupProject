@@ -1,3 +1,7 @@
+/*
+This is SettingsPage.js, where a user can log out of their account or if they are an administrator, they can access the
+administrator settings that allow them to add, delete, and modify parking lots in the supabase table "Parking Lot Table".
+ */
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
