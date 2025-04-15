@@ -1,10 +1,20 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {supabase} from "./supabase";
 import {Alert, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from './AuthContext';
 
 const LoginPage = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const { user } = useAuth();
+
+    // Check if user is already logged in
+    useEffect(() => {
+        if (user) {
+            navigation.navigate("MapPage");
+        }
+    }, [user]);
 
     // Function to fetch user profile data
     const getUserProfile = async (userId) => {
@@ -41,6 +51,9 @@ const LoginPage = ({ navigation }) => {
                 Alert.alert("Login Failed", `Error: ${error.message}`);
             } else {
                 console.log("Login success:", data.user);  // Check the user object
+
+                // Store the session
+                await AsyncStorage.setItem('supabase.session', JSON.stringify(data.session));
 
                 // Fetch user profile to get FirstName
                 const userProfile = await getUserProfile(data.user.id);

@@ -1,7 +1,3 @@
-/*
-This is the MapPage, which is the center of the application. It includes a map interface that is used to show users
-parking lots available and/or full near the user's location (calculated by longitude and latitude).
- */
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Text, Alert, ScrollView } from 'react-native';
 import MapView, { Marker, Callout } from 'react-native-maps';
@@ -9,8 +5,10 @@ import * as Location from "expo-location";
 import { supabase } from './supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { takeParkingSpace, leaveParkingSpace } from './parkingFunctions';
+import { useAuth } from './AuthContext';
 
 const MapPage = ({ navigation }) => {
+    const { user } = useAuth();
     const [currentLocation, setCurrentLocation] = useState(null);
     const [mapRef, setMapRef] = useState(null);
     const [parkingLots, setParkingLots] = useState([]);
@@ -28,40 +26,40 @@ const MapPage = ({ navigation }) => {
     });
     const [filteredParkingLots, setFilteredParkingLots] = useState([]);
 
+    // Check authentication on component mount
+    useEffect(() => {
+        if (!user) {
+            navigation.replace('LoginPage');
+        } else {
+            setCurrentUser(user);
+        }
+    }, [user]);
+
     // Fetch current user and their parking status on component mount
     useEffect(() => {
         const fetchUserAndParkingStatus = async () => {
             try {
-                const { data: { user }, error: userError } = await supabase.auth.getUser();
+                if (!user) return;
 
-                if (userError) {
-                    console.error("Auth error:", userError.message);
+                // Fetch user's parking status from SupaBase Account Sample table
+                const { data, error } = await supabase
+                    .from('SupaBase Account Sample')
+                    .select('ParkedLocation')
+                    .eq('UserID', user.id)
+                    .maybeSingle();
+
+                if (error) {
+                    console.error("Error fetching user data:", error.message);
                     return;
                 }
 
-                if (user) {
-                    setCurrentUser(user);
-
-                    // Fetch user's parking status from SupaBase Account Sample table
-                    const { data, error } = await supabase
-                        .from('SupaBase Account Sample')
-                        .select('ParkedLocation')
-                        .eq('UserID', user.id)
-                        .maybeSingle();  // Use maybeSingle() instead of single()
-
-                    if (error) {
-                        console.error("Error fetching user data:", error.message);
-                        return;
-                    }
-
-                    // If user has a ParkedLocation, update the UI
-                    if (data && data.ParkedLocation) {
-                        setIsParked(true);
-                        const parkedLot = parkingLots.find(lot => lot.ParkingLotID === data.ParkedLocation);
-                        if (parkedLot) {
-                            setNearbyParkingLot(parkedLot);
-                            setShowParkButton(true);
-                        }
+                // If user has a ParkedLocation, update the UI
+                if (data && data.ParkedLocation) {
+                    setIsParked(true);
+                    const parkedLot = parkingLots.find(lot => lot.ParkingLotID === data.ParkedLocation);
+                    if (parkedLot) {
+                        setNearbyParkingLot(parkedLot);
+                        setShowParkButton(true);
                     }
                 }
             } catch (error) {
@@ -69,7 +67,7 @@ const MapPage = ({ navigation }) => {
             }
         };
         fetchUserAndParkingStatus();
-    }, [parkingLots]);
+    }, [parkingLots, user]);
 
     // Helper function to calculate distance between two coordinates in feet
     const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -111,7 +109,7 @@ const MapPage = ({ navigation }) => {
 
     // Enhanced handlePark function with Supabase integration
     const handlePark = async () => {
-        if (!currentUser) {
+        if (!user) {
             Alert.alert("Error", "User not authenticated");
             return;
         }
@@ -134,7 +132,7 @@ const MapPage = ({ navigation }) => {
                                     const { error } = await supabase
                                         .from('SupaBase Account Sample')
                                         .update({ ParkedLocation: nearbyParkingLot.ParkingLotID })
-                                        .eq('UserID', currentUser.id);
+                                        .eq('UserID', user.id);
 
                                     if (error) throw error;
 
@@ -165,7 +163,7 @@ const MapPage = ({ navigation }) => {
                                     const { error } = await supabase
                                         .from('SupaBase Account Sample')
                                         .update({ ParkedLocation: null })
-                                        .eq('UserID', currentUser.id);
+                                        .eq('UserID', user.id);
 
                                     if (error) throw error;
 
@@ -412,7 +410,6 @@ const MapPage = ({ navigation }) => {
     );
 };
 
-// The styling takes so long. >:( -CD
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -440,6 +437,15 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 40,
         left: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 10,
+        elevation: 5,
+    },
+    logoutButton: {
+        position: 'absolute',
+        top: 40,
+        left: 120,
         backgroundColor: 'white',
         borderRadius: 20,
         padding: 10,
