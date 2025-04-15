@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, Button, Alert } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from "./supabase";
-
 import AdminPage from "./AdminPage";
 
 const SettingsPage = () => {
     const navigation = useNavigation();
     const [isAdmin, setIsAdmin] = useState(false);
 
-    // This determines whether or not a user possesses adminstrator priveleges. If so, admin button is visible.
+    // This determines whether a user possesses administrator privileges. If so, admin button is visible.
     useEffect(() => {
         const checkAdminStatus = async () => {
             try {
@@ -28,7 +27,7 @@ const SettingsPage = () => {
 
                     if (error) throw error;
 
-                    // Set admin status based on Administrator_Access value
+                    // Set admin status based on Administrator_Access value in supabase table.
                     setIsAdmin(data?.Administrator_Access === 'true');
                 }
             } catch (error) {
@@ -57,63 +56,87 @@ const SettingsPage = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.backButtonContainer}>
-                <Button
-                    title="Back"
+            {/* Header */}
+            <View style={styles.header}>
+                <TouchableOpacity
+                    style={styles.backButton}
                     onPress={() => navigation.goBack()}
-                    color="#841584"
-                />
+                >
+                    <Text style={styles.backButtonText}>Back</Text>
+                </TouchableOpacity>
+                <Text style={styles.headerText}>Settings</Text>
             </View>
-            {/* Only show Admin button if user is admin */}
-            {isAdmin && (
-                <View style={styles.adminButtonContainer}>
-                    <Button
-                        title="Admin"
+
+            {/* Main Options Container */}
+            <View style={styles.optionsContainer}>
+                <TouchableOpacity
+                    style={styles.optionButton}
+                    onPress={handleLogout}
+                >
+                    <Text style={styles.optionText}>Logout</Text>
+                </TouchableOpacity>
+
+                {/* Only show Admin button if user is admin */}
+                {isAdmin && (
+                    <TouchableOpacity
+                        style={styles.optionButton}
                         onPress={() => navigation.navigate(AdminPage)}
-                        color="#841584"
-                    />
-                </View>
-            )}
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <View style={styles.buttonContainer}>
-                    <Button
-                        title="Logout"
-                        onPress={handleLogout}
-                        color="#841584"
-                    />
-                </View>
-            </ScrollView>
+                    >
+                        <Text style={styles.optionText}>Admin</Text>
+                    </TouchableOpacity>
+                )}
+            </View>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
+        paddingTop: 30,
         flex: 1,
-        padding: 20,
         backgroundColor: '#fff',
     },
-    backButtonContainer: {
+    header: {
+        padding: 5,
+        backgroundColor: '#f5f5f5',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+    },
+    backButton: {
         position: 'absolute',
         top: 50,
         left: 10,
         zIndex: 1,
     },
-    adminButtonContainer: {
-        position: 'absolute',
-        top: 50,
-        right: 10,
-        zIndex: 1,
+    backButtonText: {
+        color: '#FF0000',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
-    scrollContainer: {
-        flexGrow: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+    headerText: {
+        padding: 20,
+        fontSize: 24,
+        fontWeight: 'bold',
+        flex: 1,
+        textAlign: 'center',
     },
-    buttonContainer: {
-        width: '100%',
-        alignItems: 'center',
+    optionsContainer: {
+        borderColor: 'black',
+        padding: 20,
     },
+    optionButton: {
+        backgroundColor: '#FF0000',
+        padding: 20,
+        borderRadius: 10,
+        marginBottom: 15,
+    },
+    optionText: {
+        color: '#fff',
+        fontSize: 18,
+        textAlign: 'center',
+    }
 });
 
 export default SettingsPage;

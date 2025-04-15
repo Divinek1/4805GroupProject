@@ -4,7 +4,7 @@ parking lots available and/or full near the user's location (calculated by longi
  */
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Text, Alert, ScrollView } from 'react-native';
-import MapView, { Marker} from 'react-native-maps';
+import MapView, { Marker, Callout } from 'react-native-maps';
 import * as Location from "expo-location";
 import { supabase } from './supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -323,12 +323,18 @@ const MapPage = ({ navigation }) => {
                                 latitude: parseFloat(lot.Latitude),
                                 longitude: parseFloat(lot.Longitude),
                             }}
-                            title={lot.ParkingLotID}
-                            description={`Available Spaces: ${lot.AvailableSpaces}`}
                         >
                             <View style={styles.markerContainer}>
                                 <Ionicons name="location" size={30} color="black" />
                             </View>
+                            <Callout>
+                                <View style={styles.calloutContainer}>
+                                    <Text style={styles.calloutTitle}>{lot.ParkingLotID}</Text>
+                                    <Text style={styles.calloutText}>{lot.LotType} Parking</Text>
+                                    <Text style={styles.calloutText}>Available Spaces: {lot.AvailableSpaces}</Text>
+                                    <Text style={styles.calloutText}>Hours of Operation: {lot.OpenHours} - {lot.CloseHours}</Text>
+                                </View>
+                            </Callout>
                         </Marker>
                     ))}
                 </MapView>
@@ -527,6 +533,19 @@ const styles = StyleSheet.create({
     filterText: {
         fontSize: 16,
         color: '#333',
+    },
+    calloutContainer: {
+        minWidth: 200,
+        padding: 10,
+    },
+    calloutTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+    calloutText: {
+        fontSize: 14,
+        marginBottom: 3,
     }
 });
 

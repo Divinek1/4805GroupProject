@@ -91,7 +91,7 @@ const ReportingPage = () => {
                     <Text style={styles.buttonText}>Take Picture for Report</Text>
                 </TouchableOpacity>
 
-                {/* Display taken photo */}
+                {/* Display the photo that the user takes for the report. */}
                 {image && (
                     <Image
                         source={{ uri: image }}
@@ -99,7 +99,7 @@ const ReportingPage = () => {
                     />
                 )}
 
-                {/* Details Input */}
+                {/* Input for additional details. */}
                 <Text style={styles.label}>Add Details to Report</Text>
                 <TextInput
                     style={styles.input}
