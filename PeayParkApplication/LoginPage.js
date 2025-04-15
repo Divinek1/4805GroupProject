@@ -1,5 +1,5 @@
 /*
-Please put description here for this page and some comments @Mitchell.
+Please put description here for this page and some comments throughout files @Mitchell.
  */
 
 import React, {useState, useEffect} from 'react';
