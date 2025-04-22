@@ -4,3 +4,4 @@ Our application’s goal is to make the process of parking on campus more manage
 
 This application uses React Native got the front-end and SupaBase client service for the back-end.
 
+All source code may be found in the "PeayParkApplication" folder and all other documents relating to this project such as proposals, requirements and technical reports may be found in the "Documents" folder.
