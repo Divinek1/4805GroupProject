@@ -1,15 +1,12 @@
-/*
-Please put description here for this page and some comments @Mitchell.
- */
+//user will be able to create their own account  email ending in @my.apsu.edu will be student , @apsu.edu will be staff , everything else is guest.
+//when users create their account they will also have to verify it by a 6 digit code sent to their email.
 import React, { useState } from 'react';
-import { supabase } from './supabase'; // Import the Supabase client
+import { supabase } from './supabase';
 import { Alert, TextInput, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 
 const CreateAccountPage = ({ navigation }) => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
-    const [userType, setUserType] = useState('Student'); // default to Student
-
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [reenterPassword, setReenterPassword] = useState('');
@@ -31,36 +28,36 @@ const CreateAccountPage = ({ navigation }) => {
             return;
         }
 
+        // Auto-detect user type from email
+        let userType = 'Guest';
+        if (email.endsWith('@my.apsu.edu')) {
+            userType = 'Student';
+        } else if (email.endsWith('@apsu.edu')) {
+            userType = 'Faculty';
+        }
+
         try {
-            const { data, error } = await supabase.auth.signUp({
-                email,
-                password
-            });
-
-
+            const { data, error } = await supabase.auth.signUp({ email, password });
 
             if (error) {
-                console.error("OTP signup error:", error.message);
+                console.error("Signup error:", error.message);
                 Alert.alert("Signup Failed", `Error: ${error.message}`);
                 return;
             }
 
             Alert.alert("Verification Sent", `Check your email (${email}) for a 6-digit code.`);
 
-            // Send info to verification screen
             navigation.navigate("VerificationPage", {
                 email,
                 firstName,
                 lastName,
                 userType
             });
-
         } catch (err) {
             console.error("Unexpected Signup Error:", err);
             Alert.alert("Unexpected Error", "Something went wrong during signup.");
         }
     };
-
 
     return (
         <View style={styles.container}>
@@ -73,7 +70,6 @@ const CreateAccountPage = ({ navigation }) => {
                 value={firstName}
                 onChangeText={setFirstName}
             />
-
             <TextInput
                 style={styles.input}
                 placeholder="Last Name"
@@ -81,7 +77,6 @@ const CreateAccountPage = ({ navigation }) => {
                 value={lastName}
                 onChangeText={setLastName}
             />
-
             <TextInput
                 style={styles.input}
                 placeholder="Email"
@@ -91,7 +86,6 @@ const CreateAccountPage = ({ navigation }) => {
                 autoCapitalize="none"
                 keyboardType="email-address"
             />
-
             <TextInput
                 style={styles.input}
                 placeholder="Password"
@@ -100,7 +94,6 @@ const CreateAccountPage = ({ navigation }) => {
                 value={password}
                 onChangeText={setPassword}
             />
-
             <TextInput
                 style={styles.input}
                 placeholder="Re-enter Password"
@@ -109,23 +102,6 @@ const CreateAccountPage = ({ navigation }) => {
                 value={reenterPassword}
                 onChangeText={setReenterPassword}
             />
-
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginBottom: 10 }}>
-                <TouchableOpacity
-                    onPress={() => setUserType('Student')}
-                    style={[styles.userTypeButton, userType === 'Student' && styles.selectedButton]}
-                >
-                    <Text style={userType === 'Student' ? styles.selectedText : styles.userTypeText}>Student</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    onPress={() => setUserType('Faculty')}
-                    style={[styles.userTypeButton, userType === 'Faculty' && styles.selectedButton]}
-                >
-                    <Text style={userType === 'Faculty' ? styles.selectedText : styles.userTypeText}>Faculty</Text>
-                </TouchableOpacity>
-            </View>
-
 
             <TouchableOpacity onPress={handleSignup} style={styles.signupButton}>
                 <Text style={styles.signupButtonText}>Sign Up</Text>
@@ -192,29 +168,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#000',
     },
-    userTypeButton: {
-        flex: 1,
-        padding: 12,
-        marginHorizontal: 5,
-        borderRadius: 6,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        alignItems: 'center',
-    },
-    selectedButton: {
-        backgroundColor: '#d32f2f',
-        borderColor: '#d32f2f',
-    },
-    userTypeText: {
-        fontSize: 16,
-        color: '#000',
-    },
-    selectedText: {
-        fontSize: 16,
-        color: '#fff',
-        fontWeight: 'bold',
-    },
-
 });
 
 export default CreateAccountPage;

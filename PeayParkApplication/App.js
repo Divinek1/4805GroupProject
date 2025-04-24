@@ -15,6 +15,10 @@ import MapPage from "./MapPage"; // Importing Map Page
 import AdminPage from "./AdminPage"; // Importing Admin Page.
 import ReportingPage from "./ReportingPage.js";
 import createAccountPage from './createAccountPage';
+import forgotPasswordPage from './forgotPasswordPage';
+import changePasswordPage from './changePasswordPage';
+import verificationPage2 from './verificationPage2';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +43,22 @@ export default function App() {
                     <Stack.Screen
                         name="VerificationPage"
                         component={VerificationPage}
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                        name="forgotPasswordPage"
+                        component={forgotPasswordPage}
+                        options={{ headerShown: false }}
+                    />
+
+                    <Stack.Screen
+                        name="verificationPage2"
+                        component={verificationPage2}
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                        name="changePasswordPage"
+                        component={changePasswordPage}
                         options={{ headerShown: false }}
                     />
                     <Stack.Screen
