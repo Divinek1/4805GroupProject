@@ -1,2 +1,7 @@
 # 4805GroupProject
+The Austin Peay State University (APSU) Parking lot application is created to make parking easier for students and staff on the APSU campus. This application will have real-time updates on a user-friendly interface. The app will allow users to view the parking availability across campus and see more detailed information about a single parking lot. Some information that will be provided about the parking lots will be what lots are most popular, what lots are running low on spaces, directions to each parking lot, and an option for users to report vehicles parked incorrectly. Additionally, the application will notify users when a parking lot is almost empty or about to reach full capacity.      
+Our application’s goal is to make the process of parking on campus more manageable and less stressful for everyone. By providing real-time updates on the applications, students or staff will not have to drive around campus hoping to find an empty parking spot. This application could possibly reduce traffic around the campus area by letting its users know where to go to find the empty parking space. The reporting option on the application will make sure everyone is held accountable and to think twice before parking in an invalid spot. 
 
+This application uses React Native got the front-end and SupaBase client service for the back-end.
+
+All source code may be found in the "PeayParkApplication" folder and all other documents relating to this project such as proposals, requirements and technical reports may be found in the "Documents" folder.
