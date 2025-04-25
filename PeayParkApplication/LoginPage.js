@@ -24,7 +24,7 @@ const LoginPage = ({ navigation }) => {
     const getUserProfile = async (userId) => {
         try {
             const { data, error } = await supabase
-                .from('SupaBase Account Sample')  // Table Name for SupaBase, May change to better name later.
+                .from('SupaBase Account Table')  // Table Name for SupaBase, May change to better name later.
                 .select('FirstName')
                 .eq('UserID', userId)
                 .single();

@@ -24,7 +24,7 @@ const SettingsPage = () => {
                 if (user) {
                     // Check admin status in SupaBase Account Sample table
                     const { data, error } = await supabase
-                        .from('SupaBase Account Sample')
+                        .from('SupaBase Account Table')
                         .select('Administrator_Access')
                         .eq('UserID', user.id)
                         .maybeSingle();
