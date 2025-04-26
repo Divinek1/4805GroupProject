@@ -3,7 +3,7 @@ This is the MapPage.js file. It is where most users will spend their time while 
 as a home screen once logged in. It shows users all parking lots on campus, it includes information about each parking
 lot and allows users to filter through available lots as well as park or unpark in specific lots. This is done through
 crafted queries that are sent to our SupaBase database, managed in this application through supabase.js. All information
-retreieved on this page is handled by information in the "Parking Lot Table" and the "Group Sample Table".
+retrieved on this page is handled by information in the "Parking Lot Table" and the "Account Sample Table".
  */
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Text, Alert, ScrollView } from 'react-native';
@@ -50,7 +50,7 @@ const MapPage = ({ navigation }) => {
 
                 // Fetch user's parking status from SupaBase Account Sample table
                 const { data, error } = await supabase
-                    .from('SupaBase Account Sample')
+                    .from('SupaBase Account Table')
                     .select('ParkedLocation')
                     .eq('UserID', user.id)
                     .maybeSingle();
