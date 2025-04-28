@@ -221,7 +221,7 @@ const MapPage = ({ navigation }) => {
                 await Location.watchPositionAsync(
                     {
                         accuracy: Location.Accuracy.BestForNavigation,
-                        distanceInterval: 1,
+                        distanceInterval: 5,
                         timeInterval: 2000,
                     },
                     (location) => {
