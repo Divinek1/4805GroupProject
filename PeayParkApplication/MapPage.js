@@ -145,6 +145,16 @@ const MapPage = ({ navigation }) => {
 
                                     await takeParkingSpace(nearbyParkingLot.ParkingLotID);
                                     setIsParked(true);
+
+                                    // Refetch parking lots to update available spaces
+                                    const { data: updatedLots, error: lotsError } = await supabase
+                                        .from('Parking Lot Table')
+                                        .select('*');
+
+                                    if (lotsError) throw lotsError;
+                                    if (updatedLots) {
+                                        setParkingLots(updatedLots);
+                                    }
                                 } catch (error) {
                                     console.error("Error updating parking status:", error.message);
                                     Alert.alert("Error", "Failed to update parking status");
@@ -176,6 +186,16 @@ const MapPage = ({ navigation }) => {
 
                                     await leaveParkingSpace(nearbyParkingLot.ParkingLotID);
                                     setIsParked(false);
+
+                                    // Refetch parking lots to update available spaces
+                                    const { data: updatedLots, error: lotsError } = await supabase
+                                        .from('Parking Lot Table')
+                                        .select('*');
+
+                                    if (lotsError) throw lotsError;
+                                    if (updatedLots) {
+                                        setParkingLots(updatedLots);
+                                    }
                                 } catch (error) {
                                     console.error("Error updating unparking status:", error.message);
                                     Alert.alert("Error", "Failed to update unparking status");
