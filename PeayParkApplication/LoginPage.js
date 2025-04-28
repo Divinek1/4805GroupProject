@@ -1,5 +1,4 @@
-//import React from 'react';
-//This is the login page where users will enter thier info they used to create a account to login in to be able to use the app.
+//This is the login page where users will enter their info they used to create a account to login in to be able to use the app.
 import React, {useState} from 'react';
 import {supabase} from "./supabase";
 
@@ -27,7 +26,21 @@ const LoginPage = ({ navigation }) => {
                 Alert.alert("Login Failed", `Error: ${error.message}`);
             } else {
                 console.log("Login success:", data.user);  // Check the user object
-                Alert.alert("Login Success", `Welcome ${data.user.email}!`);
+
+                // Fetch user's first name from SupaBase Account Table
+                const { data: userData, error: userError } = await supabase
+                    .from('SupaBase Account Table')
+                    .select('FirstName')
+                    .eq('UserID', data.user.id)
+                    .single();
+
+                if (userError) {
+                    console.error("Error fetching user data:", userError.message);
+                    Alert.alert("Login Success", `Welcome ${data.user.email}!`); // Fallback to email if error
+                } else {
+                    Alert.alert("Login Success", `Welcome ${userData.FirstName}!`);
+                }
+
                 navigation.navigate("MapPage");  // Redirect to MapPage after login
             }
         } catch (err) {
@@ -95,8 +108,6 @@ const LoginPage = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-
-
     container: {
         flex: 1,
         backgroundColor: '#fff',
@@ -158,7 +169,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#000',
     },
-
 });
 
 export default LoginPage;
