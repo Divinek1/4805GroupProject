@@ -1,4 +1,4 @@
-//users will be able to change their password  then get sent back to the login screen
+//users will be able to change their password then get sent back to the login screen
 import React, { useState } from 'react';
 import { supabase } from './supabase';
 import {
